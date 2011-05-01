@@ -1,0 +1,52 @@
+h1. tween.lua
+
+Small sets of functions for performing tweening in Lua. Based on "jQuery's animate function":http://api.jquery.com/animate/
+
+h1. Examples of use
+
+* @tween.start(time, subject, target, [easing], [callback], ...)@. By default it Returns an identifier (@id@)
+** @time@ will specify how much time must the change will take.
+** @subject@ and @target@ must both be tables. @tween.start@ will gradually alter @subject@'s properties until they look like in @target@. Properties not mentioned in @target@ will be ignored.
+** @easing@ can be either a function or a function name (see the easing section below). It's default value is @'linear'@
+** @callback@ is a function to be called when the tween is over. Only callable objects such as functions are acceptable here. Can be nil.
+** Any other parameters are passed to the @callback@ as additional parameters.
+* @tween(time, subject, target, [easing], [callback])@ redirect to @tween.start@
+* @tween.stop([id])@
+** if @id@ is not @nil@, it stops the animation identified by @id@. It does *not* reset the animation.
+** if @id@ is @nil@, stops all animation, without resetting any values
+* @tween.reset([id])@
+** if @id@ is not @nil@, it stops the animation identified by @id@, and resets the properties of @subject@ to the initial values they had at the start of the animation.
+** if @id@ is @nil@, reset all playing animation to their previous values.
+* @tween.update(dt)@ is needed to be executed on the main program loop. @dt@ is the amount of time that has passed since the last iteration. When @tween.update@ is executed, the values of very @subject@ are slightly modified so they resemble a bit more their @target@s. It is also the time in which the callbacks are invoked, if they exist.
+
+h1. Gotchas / Warnings
+
+* @tween@ does *not* implement any hardware or software clock; you will have to provide it with the access to the hardware timers, in the form of periodic calls to @cron.update@
+* @tween@ does not have any defined time units (seconds, milliseconds, etc). You define the units it uses by passing it a @dt@ on @tween.update@. If @dt@ is in seconds, then @tween@ will work in seconds. If @dt@ is in milliseconds, then @tween@ will work in milliseconds.
+
+h1. Installation
+
+Just copy the tween.lua file somewhere in your projects (maybe inside a /lib/ folder) and require it accordingly.
+
+Remember to store the value returned by require somewhere! (I suggest a local variable named inspect, altough others might like table.inspect)
+
+<pre>
+local tween = require 'tween'
+</pre>
+
+Also, make sure to read the license file; the text of that license file must appear somewhere in your projects' files.
+
+h1. Easing functions
+
+TBD
+
+h1. Specs
+
+This project uses "telescope":https://github.com/norman/telescope for its specs. If you want to run the specs, you will have to install telescope first. Then just enter the spec folder and execute run.lua:
+
+<pre>
+cd path/to/tween.lua/specs
+lua run.lua
+</pre>
+
+
