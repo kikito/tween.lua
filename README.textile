@@ -28,17 +28,72 @@ h1. Installation
 
 Just copy the tween.lua file somewhere in your projects (maybe inside a /lib/ folder) and require it accordingly.
 
-Remember to store the value returned by require somewhere! (I suggest a local variable named inspect, altough others might like table.inspect)
+Remember to store the value returned by require somewhere! (I suggest a local variable named tween)
 
 <pre>
 local tween = require 'tween'
+</pre>
+
+The second step is making sure that your "game loop" calls @tween.update@ with a proper @dt@. Where to put this call depends greatly on your game loop architecture. It will probably go into an "update" function:
+
+<pre>
+function update(dt)
+  ...
+  tween.update(dt)
+end
 </pre>
 
 Also, make sure to read the license file; the text of that license file must appear somewhere in your projects' files.
 
 h1. Easing functions
 
-TBD
+Easing functions are functions that express how slow/fast the interpolation happens in tween.
+
+tween.lua comes with a lot of easing functions already built-in (adapted from "Emmanuel Oga's easing library":https://github.com/EmmanuelOga/easing
+
+They can be divided into several big families:
+
+* @linear@ is the default interpolation. It's the simplest easing function.
+* @quad@, @cubic@, @quart@, @quint@, @expo@, @sine@ and @circle@ are all "smooth" curves that will make transitions look natural.
+* The @back@ family starts by moving the interpolation slightly "backwards" before moving it forward.
+* The @bounce@ family simulates the motion of an object bouncing.
+* The @elastic@ family simulates inertia in the easing, like an elastic gum.
+
+Each family (except @linear@ has 4 variants):
+* @in@ starts slow, and accelerates at the end
+* @out@ starts fast, and decelerates at the end
+* @inOut@ starts and ends slow, but it's fast in the middle
+* @outIn@ starts and ends fast, but it's slow in the middle
+
+|_. family |_. in    |_. out     |_. inOut    |_. outIn    |
+|_. linear |linear   |linear     |linear      |linear      |
+|_. quad   |inQuad   |outQuad    |inOutQuad   |outInQuad   |
+|_. cubic  |inCubic  |outCubic   |inOutCubic  |outInCubic  |
+|_. quart  |inQuart  |outQuart   |inOutQuart  |outInQuart  |
+|_. quint  |inQuint  |outQuint   |inOutQuint  |outInQuint  |
+|_. expo   |inExpo   |outExpo    |inOutExpo   |outInExpo   |
+|_. sine   |inSine   |outSine    |inOutSine   |outInSine   |
+|_. circle |inCircle |outCircle  |inOutCircle |outInCircle |
+|_. back   |inBack   |outBack    |inOutBack   |outInBack   |
+|_. bounce |inBounce |outBounce  |inOutBounce |outInBounce |
+|_. elastic|inElastic|outElastic |inOutElastic|outInElascit|
+
+You may want to give a look to the graphs folder on this repository to get a better idea of what I'm talking about.
+
+When you specify an easing fucntion, you can either give the function name as a string. The following two are equivalent:
+
+<pre>
+tween(10, subject, {x=10}, tween.easing.linear)
+tween(10, subject, {x=10}, 'linear')
+</pre>
+
+Well, actually, since 'linear' is the default, you can also do this:
+<pre>
+tween(10, subject, {x=10})
+</pre>
+
+You can of course specify your own easing function. Just make sure you respect the parameter format.
+
 
 h1. Specs
 
