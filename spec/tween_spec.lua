@@ -65,6 +65,11 @@ describe('tween', function()
         assert_not_error(function() tween.start(1, {}, {}, function() end) end)
         assert_not_error(function() tween.start(1, {}, {}, 'linear') end)
       end)
+
+      test('callback must be a function or nil', function()
+        assert_error(function() tween.start(1, {}, {}, 'linear', 'foo') end)
+        assert_not_error(function() tween.start(1, {}, {}, 'linear', function() end) end)
+      end)
       
     end)
 
@@ -77,7 +82,7 @@ describe('tween', function()
   end)
 
   describe('tween.update', function()
-    test('Should only admit postitive numbers for dt', function()
+    test('Should only admit positive numbers for dt', function()
       assert_error(function() tween.update(-1) end)
       assert_error(function() tween.update(0) end)
       assert_error(function() tween.update('foo') end)
@@ -195,6 +200,7 @@ describe('tween', function()
     testEasing('outInExpo', {5.005,7.5075,8.75875,9.384375,9.6971875,9.85359375,9.931796875,
                              9.9708984375,9.99044921875,10,10.00953125,10.0290625,
                              10.068125,10.14625,10.3025,10.615,11.24,12.49,14.99,20})
+    testEasing('outInQuad', {1.9,3.6,5.1,6.4,7.5,8.4,9.1,9.6,9.9,10,10.1,10.4,10.9,11.6,12.5,13.6,14.9,16.4,18.1,20})
     testEasing('outInQuart', {3.439,5.904,7.599,8.704,9.375,9.744,9.919,9.984,9.999,10,10.001,
                               10.016,10.081,10.256,10.625,11.296,12.401,14.096,16.561,20})
     testEasing('outInQuint', {4.0951,6.7232,8.3193,9.2224,9.6875,9.8976,9.9757,9.9968,9.9999,
@@ -220,7 +226,5 @@ describe('tween', function()
   end)
 
 end)
-
-
 
 
