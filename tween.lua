@@ -219,45 +219,34 @@ local function outInCirc(t, b, c, d)
 end
 
 -- elastic
+local function calculatePAS(p,a,c,d)
+  p, a = p or d * 0.3, a or 0
+  if a < abs(c) then return p, c, p / 4 end -- p, a, s
+  return p, a, p / (2 * pi) * asin(c/a) -- p,a,s
+end
 local function inElastic(t, b, c, d, a, p)
+  local s
   if t == 0 then return b end
   t = t / d
   if t == 1  then return b + c end
-  p, a = p or d * 0.3, a or 0
-  local s
-  if a < abs(c) then
-    a = c
-    s = p / 4
-  else
-    s = p / (2 * pi) * asin(c/a)
-  end
+  p,a,s = calculatePAS(p,a,c,d)
   t = t - 1
   return -(a * pow(2, 10 * t) * sin((t * d - s) * (2 * pi) / p)) + b
 end
 local function outElastic(t, b, c, d, a, p)
+  local s
   if t == 0 then return b end
   t = t / d
   if t == 1 then return b + c end
-  p, a = p or d * 0.3, a or 0
-  local s
-  if a < abs(c) then
-    a, s = c, p / 4
-  else
-    s = p / (2 * pi) * asin(c/a)
-  end
+  p,a,s = calculatePAS(p,a,c,d)
   return a * pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p) + c + b
 end
 local function inOutElastic(t, b, c, d, a, p)
+  local s
   if t == 0 then return b end
   t = t / d * 2
   if t == 2 then return b + c end
-  p, a = p or d * 0.3, a or 0
-  local s
-  if a < abs(c) then
-    a, s = c, p / 4
-  else
-    s = p / (2 * pi) * asin(c / a)
-  end
+  p,a,s = calculatePAS(p,a,c,d)
   t = t - 1
   if t < 0 then return -0.5 * (a * pow(2, 10 * t) * sin((t * d - s) * (2 * pi) / p)) + b end
   return a * pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p ) * 0.5 + c + b
