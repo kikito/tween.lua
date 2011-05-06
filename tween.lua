@@ -15,7 +15,7 @@ local function isCallable(f)
   if tf == 'function' then return true end
   if tf == 'table' then
     local mt = getmetatable(f)
-    return type(mt) == 'table' and type(mt.__call) == 'function'
+    return (type(mt) == 'table' and type(mt.__call) == 'function')
   end
   return false
 end
@@ -36,11 +36,11 @@ local function checkSubjectAndTargetRecursively(subject, target)
 end
 
 local function checkStartParams(time, subject, target, easing, callback)
-  assert(type(time) == 'number' and time > 0, "time must be a positive number.")
-  assert(type(subject) == 'table', "subject must be a table.")
-  assert(type(target)== 'table', "target must be a table.")
-  assert(isCallable(easing), "easing must be a function or functable.")
-  assert(callback==nil or isCallable(callback), "callback must be nil, a function or functable.")
+  assert(type(time) == 'number' and time > 0, "time must be a positive number. Was " .. tostring(time))
+  assert(type(subject) == 'table', "subject must be a table. Was " .. tostring(subject))
+  assert(type(target)== 'table', "target must be a table. Was " .. tostring(target))
+  assert(isCallable(easing), "easing must be a function or functable. Was " .. tostring(easing))
+  assert(callback==nil or isCallable(callback), "callback must be nil, a function or functable. Was " .. tostring(time))
   checkSubjectAndTargetRecursively(subject, target)
 
 end
@@ -90,12 +90,16 @@ local function updateTween(self, dt)
 
   if self.running >= self.time then
     copyTables(self.subject, self.target, self.target)
-    if self.callback then self.callback(unpack(self.args)) end
     return true
   end
 
   performEasing(self, self.subject, self.target, self.initial)
   return false
+end
+
+local function expireTween(self)
+  tweens[self] = nil
+  if self.callback then self.callback(unpack(self.args)) end
 end
 
 
@@ -107,7 +111,7 @@ function tween.start(time, subject, target, easing, callback, ...)
   return newTween(time, subject, target, easing, callback, {...})
 end
 
-setmetatable(tween, { __call = function(t, ...) tween.start(...) end })
+setmetatable(tween, { __call = function(t, ...) return tween.start(...) end })
 
 function tween.reset(id)
   if id == nil then
@@ -123,7 +127,7 @@ function tween.update(dt)
   for _,t in pairs(tweens) do
     if updateTween(t, dt) then table.insert(expired, t) end
   end
-  for i=1, #expired do tweens[expired[i]] = nil end
+  for i=1, #expired do expireTween(expired[i]) end
 end
 
 -- easing

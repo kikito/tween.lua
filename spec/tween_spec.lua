@@ -1,4 +1,5 @@
-local tween = require('tween')
+local tween = require 'tween'
+local inspect = require 'inspect'
 
 describe('tween', function()
 
@@ -80,9 +81,10 @@ describe('tween', function()
         assert_not_error(function() tween.start(1, {}, {}, 'linear') end)
       end)
 
-      test('callback must be a function or nil', function()
+      test('callback must be callable or nil', function()
         assert_error(function() tween.start(1, {}, {}, 'linear', 'foo') end)
         assert_not_error(function() tween.start(1, {}, {}, 'linear', function() end) end)
+        assert_not_error(function() tween.start(1, {}, {}, 'linear', tween) end)
       end)
       
     end)
@@ -92,6 +94,7 @@ describe('tween', function()
   describe('tween', function()
     test('Should work just like tween.start', function()
       assert_not_error(function() tween(1, {}, {}) end)
+      assert_not_nil(tween(1, {}, {}))
     end)
   end)
 
@@ -113,6 +116,27 @@ describe('tween', function()
       assert_table_equal(subject, {3, a = {3, {6, 9}}})
       tween.update(1)
       assert_table_equal(subject, target)
+    end)
+
+    test('Tweening should be chainable', function()
+      local subject = {1}
+      local t = tween(1, subject, {2}, 'linear', tween, 1, subject, {3}, 'linear', tween, 1, subject, {4})
+      for i=2, 4 do
+        tween.update(1)
+        assert_equal(subject[1], i)
+      end
+    end)
+
+    test('Traffic Light', function()
+      local trafficLight = { color1 = {255,0,0}, color2 = {0,0,0}, color3 = {0,0,0} }
+      local yellow = { color1 = {0,0,0}, color2 = {255,255,0}, color3 = {0,0,0} }
+      local green = { color1 = {0,0,0}, color2 = {0,0,0}, color3 = {0,255,0} }
+      
+      tween(1, trafficLight, yellow, 'linear', tween, 1, trafficLight, green)
+      tween.update(1)
+      assert_table_equal(trafficLight, yellow)
+      tween.update(1)
+      assert_table_equal(trafficLight, green)
     end)
 
     test('When easing is finished, subject values should be goals', function()

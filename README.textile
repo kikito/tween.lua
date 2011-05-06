@@ -2,7 +2,36 @@ h1. tween.lua
 
 Small sets of functions for performing tweening in Lua. Based on "jQuery's animate function":http://api.jquery.com/animate/
 
-h1. Examples of use
+h1. Examples
+
+<pre>
+local tween = require 'tween'
+
+-- increase the volume of music from 0 to 5 in 10 seconds
+local music = { volume = 0, path = "path/to/file.mp3" }
+tween(10, music, { volume = 5 })
+
+-- make some text fall from the top of the screen, bouncing on y=300, in 4 seconds
+local label = { x=200, y=0, text = "hello" }
+tween(4, label, { y=300 }, 'inBounce')
+
+-- fade background to black in 2 seconds, and then print a message on the terminal
+local backgroundColor = {255,255,255}
+tween(2, backgroundColor, {0,0,0}, 'linear', print, "hello!")
+</pre>
+
+You will need to put @tween.update@ somewhere in your game loop update function:
+
+<pre>
+
+function your_game_loop_update(dt)
+  ...
+  tween.update(dt)
+  ...
+end
+</pre>
+
+h1. Interface
 
 * @tween.start(time, subject, target, [easing], [callback], ...)@. By default it Returns an identifier (@id@)
 ** @time@ will specify how much time must the change will take.
@@ -23,6 +52,17 @@ h1. Gotchas / Warnings
 
 * @tween@ does *not* implement any hardware or software clock; you will have to provide it with the access to the hardware timers, in the form of periodic calls to @cron.update@
 * @tween@ does not have any defined time units (seconds, milliseconds, etc). You define the units it uses by passing it a @dt@ on @tween.update@. If @dt@ is in seconds, then @tween@ will work in seconds. If @dt@ is in milliseconds, then @tween@ will work in milliseconds.
+* @tween@ can work on deeply-nested subtables (the "leaf" values have to be numbers in both the subject and the target)
+
+<pre>
+local trafficLight = { color1 = {255,0,0}, color2 = {0,0,0}, color3 = {0,0,0} }
+tween(3, trafficLight, { color1 = {0,0,0}, color2 = {255,255,0}, color3 = {0,0,0} }, 'linear', function()
+  tween(1, trafficLight, { color1 = {0,0,0}, color2 = {0,0,0}, color3 = {0,255,0} }
+end)
+for i=1, 4 do
+  tween.update(1) -- In 3 iterations the lights will change from red to yellow. The last iteration will change them to green
+end
+</pre>
 
 h1. Installation
 
