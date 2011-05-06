@@ -4,8 +4,9 @@
 -- tweening functions for lua
 -- inspired by jquery's animate function
 -----------------------------------------------------------------------------------------------------------------------
-
 local tween = {}
+
+-- private stuff
 
 local tweens = setmetatable({}, {__mode = "k"})
 
@@ -19,18 +20,29 @@ local function isCallable(f)
   return false
 end
 
+local function checkSubjectAndTargetRecursively(subject, target)
+  local targetType, subjectValue
+  for k,targetValue in pairs(target) do
+    targetType = type(targetValue)
+    subjectValue = subject[k]
+    if targetType == 'number' then
+      assert(type(subjectValue) == 'number', "Parameter '" .. k .. "' is missing from subject or isn't a number")
+    elseif targetType == 'table' then
+      checkSubjectAndTargetRecursively(subjectValue, targetValue)
+    else
+      assert(targetType == 'number', "Parameter '" .. k .. "' must be a number or table of numbers")
+    end
+  end
+end
+
 local function checkStartParams(time, subject, target, easing, callback)
   assert(type(time) == 'number' and time > 0, "time must be a positive number.")
   assert(type(subject) == 'table', "subject must be a table.")
   assert(type(target)== 'table', "target must be a table.")
   assert(isCallable(easing), "easing must be a function or functable.")
   assert(callback==nil or isCallable(callback), "callback must be nil, a function or functable.")
+  checkSubjectAndTargetRecursively(subject, target)
 
-  for k,v in pairs(target) do
-    assert(type(v) == 'number', "Parameter '" .. k .. "' must be a number")
-    local sk = subject[k]
-    assert(type(sk) == 'number', "Parameter '" .. k .. "' not found on subject, or incorrect type found")
-  end
 end
 
 local function getEasing(easing)
@@ -43,7 +55,13 @@ local function getEasing(easing)
 end
 
 local function copyTables(destination, keysTable, valuesTable)
-  for k,_ in pairs(keysTable) do destination[k] = valuesTable[k] end
+  for k,v in pairs(keysTable) do
+    if type(v) == 'table' then
+      destination[k] = copyTables({}, v, valuesTable[k])
+    else
+      destination[k] = valuesTable[k]
+    end
+  end
   return destination
 end
 
@@ -55,11 +73,15 @@ local function newTween(time, subject, target, easing, callback, args)
   return self
 end
 
-local function performEasing(self)
+local function performEasing(self, subject, target, initial)
   local t,b,c,d
-  for k,v in pairs(self.target) do
-    t,b,c,d = self.running, self.initial[k], v - self.initial[k], self.time
-    self.subject[k] = self.easing(t,b,c,d)
+  for k,v in pairs(target) do
+    if type(v)=='table' then
+      performEasing(self, subject[k], v, initial[k])
+    else
+      t,b,c,d = self.running, initial[k], v - initial[k], self.time
+      subject[k] = self.easing(t,b,c,d)
+    end
   end
 end
 
@@ -72,7 +94,7 @@ local function updateTween(self, dt)
     return true
   end
 
-  performEasing(self)
+  performEasing(self, self.subject, self.target, self.initial)
   return false
 end
 

@@ -8,6 +8,16 @@ describe('tween', function()
     counter = counter + x
   end
 
+  local function assert_table_equal(t1, t2)
+    local type1, type2 = type(t1), type(t2)
+    assert_equal(type1, type2)
+    if type(t1)=='table' then
+      for k,v in pairs(t1) do assert_table_equal(v, t2[k]) end
+    else
+      assert_equal(t1, t2)
+    end
+  end
+
   local function testEasing(easing, values)
     test(easing .. ' works as expected', function()
       local subject = {0}
@@ -49,15 +59,19 @@ describe('tween', function()
         assert_not_error(function() tween.start(1, {}, {}) end)
       end)
 
-      test('target data can only be numbers', function()
+      test('target data can only be numbers or tables with numbers', function()
         assert_error(function() tween.start(1, {1,2}, {'a', 'b'}) end)
         assert_error(function() tween.start(1, {x=1}, {x = print}) end)
         assert_not_error(function() tween.start(1, {x=1}, {x = 2}) end)
+        assert_not_error(function() tween.start(1, {color={255,255,255}}, {color={0,0,0}}) end)
       end)
 
-      test('subject data with a target must be a number', function()
+      test('subject data must correspond to target data', function()
         assert_error(function() tween.start(1, {}, {x=1}) end)
         assert_error(function() tween.start(1, {y=1}, {x = 1}) end)
+        assert_error(function() tween.start(1, {y=1}, {y = {1,2,3}}) end)
+        assert_error(function() tween.start(1, {a={b={c=3}}}, {a=1}) end)
+        assert_not_error(function() tween.start(1, {1, a={b={c=3}}}, {3, a={b={c=1}}}) end)
       end)
 
       test('easing must be a function or valid easing function name, or nil', function()
@@ -89,24 +103,42 @@ describe('tween', function()
       assert_not_error(function() tween.update(1) end)
     end)
 
+    test('Tweening should happen recursively', function()
+      local subject = {1, a = {1, {2, 3}}}
+      local target =  {4, a = {4, {8, 12}}}
+      tween(3, subject, target)
+      tween.update(1)
+      assert_table_equal(subject, {2, a = {2, {4, 6}}})
+      tween.update(1)
+      assert_table_equal(subject, {3, a = {3, {6, 9}}})
+      tween.update(1)
+      assert_table_equal(subject, target)
+    end)
+
     test('When easing is finished, subject values should be goals', function()
       local a = {1}
       local b = {x = 1, y = 1}
+      local c = {color = {0,0,0}}
+
       tween(1, a, {2}, 'linear', count)
       tween(3, b, {x = 2, y = 2}, 'linear', count, 2)
-      tween.update(1)
+      tween(5, c, {color = {255,30,50}})
+
+      tween.update(1)           -- 1
       assert_equal(a[1], 2)
       assert_equal(counter, 1)
-      tween.update(1)
+
+      tween.update(1)           -- 2
       assert_equal(a[1], 2)
       assert_equal(counter, 1)
-      tween.update(1)
-      assert_equal(b.x, 2)
-      assert_equal(b.y, 2)
+
+      tween.update(1)           -- 3
+      assert_table_equal(b, {x=2, y=2})
       assert_equal(counter, 3)
-      tween.update(2)
-      assert_equal(b.x, 2)
-      assert_equal(b.y, 2)
+
+      tween.update(2)           -- 5
+      assert_table_equal(b, {x=2, y=2})
+      assert_table_equal(c, {color={255,30,50}})
       assert_equal(counter, 3)
     end)
   end)
