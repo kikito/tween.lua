@@ -13,7 +13,7 @@ tween(10, music, { volume = 5 })
 
 -- make some text fall from the top of the screen, bouncing on y=300, in 4 seconds
 local label = { x=200, y=0, text = "hello" }
-tween(4, label, { y=300 }, 'inBounce')
+tween(4, label, { y=300 }, 'outBounce')
 
 -- fade background to black in 2 seconds, and then print a message on the terminal
 local backgroundColor = {255,255,255}
