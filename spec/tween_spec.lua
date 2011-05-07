@@ -1,5 +1,4 @@
 local tween = require 'tween'
-local inspect = require 'inspect'
 
 describe('tween', function()
 
