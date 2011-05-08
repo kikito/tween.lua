@@ -142,4 +142,11 @@ cd path/to/tween.lua/specs
 lua run.lua
 </pre>
 
+h1. Credits
+
+The easing functions have been copied from EmmanuelOga's project in
+
+https://github.com/emmanueloga/easing
+
+See the LICENSE.txt file for details.
 
