@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------------------------------------
--- tween.lua - v0.1 (2011-05)
+-- tween.lua - v1.0 (2011-05)
 -- Enrique García Cota - enrique.garcia.cota [AT] gmail [DOT] com
 -- tweening functions for lua
 -- inspired by jquery's animate function
@@ -61,25 +61,33 @@ end
 local function getEasingFunction(easing)
   easing = easing or "linear"
   if type(easing) == 'string' then
-    assert(type(tween.easing[easing]) == 'function', "The easing function name '" .. easing .. "' is invalid")
-    easing = tween.easing[easing]
+    local name = easing
+    easing = tween.easing[name]
+    assert(type(easing) == 'function', "The easing function name '" .. name .. "' is invalid")
   end
   return easing
 end
 
 local function newTween(time, subject, target, easing, callback, args)
-  local self = { time = time, subject = subject, target = target, easing = easing, callback = callback, args = args }
-  self.initial = copyTables({}, target, subject)
-  self.running = 0
+  local self = {
+    time = time,
+    subject = subject,
+    target = target,
+    easing = easing,
+    callback = callback,
+    args = args,
+    initial = copyTables({}, target, subject),
+    running = 0
+  }
   tweens[self] = self
   return self
 end
 
-local function performEasing(self, subject, target, initial)
+local function easeWithTween(self, subject, target, initial)
   local t,b,c,d
   for k,v in pairs(target) do
     if type(v)=='table' then
-      performEasing(self, subject[k], v, initial[k])
+      easeWithTween(self, subject[k], v, initial[k])
     else
       t,b,c,d = self.running, initial[k], v - initial[k], self.time
       subject[k] = self.easing(t,b,c,d)
@@ -89,19 +97,21 @@ end
 
 local function updateTween(self, dt)
   self.running = self.running + dt
-
-  if self.running >= self.time then
-    copyTables(self.subject, self.target)
-    return true
-  end
-
-  performEasing(self, self.subject, self.target, self.initial)
-  return false
+  easeWithTween(self, self.subject, self.target, self.initial)
 end
 
-local function expireTween(self)
-  tweens[self] = nil
+local function hasExpiredTween(self)
+  return self.running >= self.time
+end
+
+local function finishTween(self)
+  copyTables(self.subject, self.target)
   if self.callback then self.callback(unpack(self.args)) end
+  tween.stop(self)
+end
+
+local function resetTween(self)
+  copyTables(self.subject, self.initial)
 end
 
 -- easing
@@ -329,11 +339,20 @@ end
 setmetatable(tween, { __call = function(t, ...) return tween.start(...) end })
 
 function tween.reset(id)
-  local tween = tweens[id]
-  if tween then
-    copyTables(tween.subject, tween.initial)
-    tweens[id]=nil
+  local tw = tweens[id]
+  if tw then
+    resetTween(tw)
+    tween.stop(tw)
   end
+end
+
+function tween.resetAll(id)
+  for _,tw in pairs(tweens) do copyTables(tw.subject, tw.initial) end
+  tween.stopAll()
+end
+
+function tween.stop(id)
+  if id~=nil then tweens[id]=nil end
 end
 
 function tween.stopAll()
@@ -344,9 +363,10 @@ function tween.update(dt)
   assert(type(dt) == 'number' and dt > 0, "dt must be a positive number")
   local expired = {}
   for _,t in pairs(tweens) do
-    if updateTween(t, dt) then table.insert(expired, t) end
+    updateTween(t, dt)
+    if hasExpiredTween(t) then table.insert(expired, t) end
   end
-  for i=1, #expired do expireTween(expired[i]) end
+  for i=1, #expired do finishTween(expired[i]) end
 end
 
 
