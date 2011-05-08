@@ -58,7 +58,7 @@ local function checkStartParams(time, subject, target, easing, callback)
 
 end
 
-local function getEasing(easing)
+local function getEasingFunction(easing)
   easing = easing or "linear"
   if type(easing) == 'string' then
     assert(type(tween.easing[easing]) == 'function', "The easing function name '" .. easing .. "' is invalid")
@@ -321,7 +321,7 @@ tween.easing = {
 -- public functions
 
 function tween.start(time, subject, target, easing, callback, ...)
-  easing = getEasing(easing)
+  easing = getEasingFunction(easing)
   checkStartParams(time, subject, target, easing, callback)
   return newTween(time, subject, target, easing, callback, {...})
 end
