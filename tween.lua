@@ -8,7 +8,7 @@ local tween = {}
 
 -- private stuff
 
-local tweens = setmetatable({}, {__mode = "k"})
+tweens = setmetatable({}, {__mode = "k"})
 
 local function isCallable(f)
   local tf = type(f)
@@ -20,17 +20,30 @@ local function isCallable(f)
   return false
 end
 
-local function checkSubjectAndTargetRecursively(subject, target)
-  local targetType, subjectValue
-  for k,targetValue in pairs(target) do
-    targetType = type(targetValue)
-    subjectValue = subject[k]
-    if targetType == 'number' then
-      assert(type(subjectValue) == 'number', "Parameter '" .. k .. "' is missing from subject or isn't a number")
-    elseif targetType == 'table' then
-      checkSubjectAndTargetRecursively(subjectValue, targetValue)
+local function copyTables(destination, keysTable, valuesTable)
+  valuesTable = valuesTable or keysTable
+  for k,v in pairs(keysTable) do
+    if type(v) == 'table' then
+      destination[k] = copyTables({}, v, valuesTable[k])
     else
-      assert(targetType == 'number', "Parameter '" .. k .. "' must be a number or table of numbers")
+      destination[k] = valuesTable[k]
+    end
+  end
+  return destination
+end
+
+local function checkSubjectAndTargetRecursively(subject, target, path)
+  path = path or {}
+  local targetType, newPath
+  for k,targetValue in pairs(target) do
+    targetType, newPath = type(targetValue), copyTables({}, path)
+    table.insert(newPath, tostring(k))
+    if targetType == 'number' then
+      assert(type(subject[k]) == 'number', "Parameter '" .. table.concat(newPath,'/') .. "' is missing from subject or isn't a number")
+    elseif targetType == 'table' then
+      checkSubjectAndTargetRecursively(subject[k], targetValue, newPath)
+    else
+      assert(targetType == 'number', "Parameter '" .. table.concat(newPath,'/') .. "' must be a number or table of numbers")
     end
   end
 end
@@ -52,17 +65,6 @@ local function getEasing(easing)
     easing = tween.easing[easing]
   end
   return easing
-end
-
-local function copyTables(destination, keysTable, valuesTable)
-  for k,v in pairs(keysTable) do
-    if type(v) == 'table' then
-      destination[k] = copyTables({}, v, valuesTable[k])
-    else
-      destination[k] = valuesTable[k]
-    end
-  end
-  return destination
 end
 
 local function newTween(time, subject, target, easing, callback, args)
@@ -89,7 +91,7 @@ local function updateTween(self, dt)
   self.running = self.running + dt
 
   if self.running >= self.time then
-    copyTables(self.subject, self.target, self.target)
+    copyTables(self.subject, self.target)
     return true
   end
 
@@ -100,34 +102,6 @@ end
 local function expireTween(self)
   tweens[self] = nil
   if self.callback then self.callback(unpack(self.args)) end
-end
-
-
--- public functions
-
-function tween.start(time, subject, target, easing, callback, ...)
-  easing = getEasing(easing)
-  checkStartParams(time, subject, target, easing, callback)
-  return newTween(time, subject, target, easing, callback, {...})
-end
-
-setmetatable(tween, { __call = function(t, ...) return tween.start(...) end })
-
-function tween.reset(id)
-  if id == nil then
-    tweens = setmetatable({}, {__mode = "k"})
-  else
-    tweens[id] = nil
-  end
-end
-
-function tween.update(dt)
-  assert(type(dt) == 'number' and dt > 0, "dt must be a positive number")
-  local expired = {}
-  for _,t in pairs(tweens) do
-    if updateTween(t, dt) then table.insert(expired, t) end
-  end
-  for i=1, #expired do expireTween(expired[i]) end
 end
 
 -- easing
@@ -342,6 +316,36 @@ tween.easing = {
   inBack    = inBack,    outBack    = outBack,    inOutBack    = inOutBack,    outInBack    = outInBack,
   inBounce  = inBounce,  outBounce  = outBounce,  inOutBounce  = inOutBounce,  outInBounce  = outInBounce,
 }
+
+
+-- public functions
+
+function tween.start(time, subject, target, easing, callback, ...)
+  easing = getEasing(easing)
+  checkStartParams(time, subject, target, easing, callback)
+  return newTween(time, subject, target, easing, callback, {...})
+end
+
+setmetatable(tween, { __call = function(t, ...) return tween.start(...) end })
+
+function tween.reset(id)
+  if id == nil then
+    tweens = setmetatable({}, {__mode = "k"})
+  else
+    tweens[id] = nil
+  end
+end
+
+function tween.update(dt)
+  assert(type(dt) == 'number' and dt > 0, "dt must be a positive number")
+  local expired = {}
+  for _,t in pairs(tweens) do
+    if updateTween(t, dt) then table.insert(expired, t) end
+  end
+  for i=1, #expired do expireTween(expired[i]) end
+end
+
+
 
 return tween
 
