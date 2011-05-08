@@ -120,10 +120,12 @@ describe('tween', function()
     test('Tweening should be chainable', function()
       local subject = {1}
       local t = tween(1, subject, {2}, 'linear', tween, 1, subject, {3}, 'linear', tween, 1, subject, {4})
-      for i=2, 4 do
-        tween.update(1)
-        assert_equal(subject[1], i)
-      end
+      tween.update(1)
+      assert_equal(subject[1], 2)
+      tween.update(1)
+      assert_equal(subject[1], 3)
+      tween.update(1)
+      assert_equal(subject[1], 4)
     end)
 
     test('Traffic Light', function()
@@ -168,15 +170,64 @@ describe('tween', function()
 
   describe('tween.reset', function()
     
-    test('without parameters, it moves everything back to their initial state, and cancels all tests', function()
+    test('it does nothing if the id isnt on the tween list', function()
+      assert_not_error(function() tween.reset(nil) end)
+      assert_not_error(function() tween.reset(1) end)
+      assert_not_error(function() tween.reset('foo') end)
+    end)
+
+    test('it moves the subject back to its initial state, and cancels movement', function()
       local subject = {1}
-      local id = tween(3, subject, {3})
+      local id = tween(2, subject, {3})
       tween.update(1)
       tween.reset(id)
       assert_equal(subject[1], 1)
     end)
 
+  end)
 
+  describe('tween.resetAll', function()
+    test('it moves all the subjects back to their initial state', function()
+      local a,b = {1},{1}
+      tween(2, a, {3})
+      tween(2, b, {3})
+      tween.update(1)
+      tween.resetAll()
+      assert_equal(a[1], 1)
+      assert_equal(b[1], 1)
+    end)
+  end)
+
+  describe('tween.stop', function()
+    
+    test('it does nothing if the id isnt on the tween list', function()
+      assert_not_error(function() tween.stop(nil) end)
+      assert_not_error(function() tween.stop(1) end)
+      assert_not_error(function() tween.stop('foo') end)
+    end)
+
+    test('it moves stops any tween - without resetting their state', function()
+      local subject = {1}
+      local id = tween(2, subject, {3})
+      tween.update(1)
+      tween.stop(id)
+      tween.update(1)
+      assert_equal(subject[1], 2)
+    end)
+
+  end)
+
+  describe('tween.stopAll', function()
+    test('it stops all the tweens', function()
+      local a,b = {1},{1}
+      tween(2, a, {3})
+      tween(2, b, {3})
+      tween.update(1)
+      tween.stopAll()
+      tween.update(1)
+      assert_equal(a[1], 2)
+      assert_equal(b[1], 2)
+    end)
   end)
 
   describe('easing', function()
