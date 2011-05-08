@@ -34,7 +34,7 @@ describe('tween', function()
 
   before(function()
     counter = 0
-    tween.reset()
+    tween.stopAll()
   end)
 
   describe('tween.start', function()
@@ -164,6 +164,19 @@ describe('tween', function()
       assert_table_equal(c, {color={255,30,50}})
       assert_equal(counter, 3)
     end)
+  end)
+
+  describe('tween.reset', function()
+    
+    test('without parameters, it moves everything back to their initial state, and cancels all tests', function()
+      local subject = {1}
+      local id = tween(3, subject, {3})
+      tween.update(1)
+      tween.reset(id)
+      assert_equal(subject[1], 1)
+    end)
+
+
   end)
 
   describe('easing', function()

@@ -329,11 +329,15 @@ end
 setmetatable(tween, { __call = function(t, ...) return tween.start(...) end })
 
 function tween.reset(id)
-  if id == nil then
-    tweens = setmetatable({}, {__mode = "k"})
-  else
-    tweens[id] = nil
+  local tween = tweens[id]
+  if tween then
+    copyTables(tween.subject, tween.initial)
+    tweens[id]=nil
   end
+end
+
+function tween.stopAll()
+  tweens = setmetatable({}, {__mode = "k"})
 end
 
 function tween.update(dt)

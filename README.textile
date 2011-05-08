@@ -40,12 +40,10 @@ h1. Interface
 ** @callback@ is a function to be called when the tween is over. Only callable objects such as functions are acceptable here. Can be nil.
 ** Any other parameters are passed to the @callback@ as additional parameters.
 * @tween(time, subject, target, [easing], [callback])@ redirect to @tween.start@
-* @tween.stop([id])@
-** if @id@ is not @nil@, it stops the animation identified by @id@. It does *not* reset the animation.
-** if @id@ is @nil@, stops all animation, without resetting any values
-* @tween.reset([id])@
-** if @id@ is not @nil@, it stops the animation identified by @id@, and resets the properties of @subject@ to the initial values they had at the start of the animation.
-** if @id@ is @nil@, reset all playing animation to their previous values.
+* @tween.stop([id])@ stops the animation identified by @id@. It does *not* reset the animation to its initial state.
+* @tween.stopAll()@ stops all animations, without resetting any values
+* @tween.reset(id)@ stops the animation identified by @id@, and resets its @subject@ to the initial values it had at the start of the animation.
+* @tween.resetAll()@ resetd all currently playing animations to their initial state.
 * @tween.update(dt)@ is needed to be executed on the main program loop. @dt@ is the amount of time that has passed since the last iteration. When @tween.update@ is executed, the values of very @subject@ are slightly modified so they resemble a bit more their @target@s. It is also the time in which the callbacks are invoked, if they exist.
 
 h1. Gotchas / Warnings
