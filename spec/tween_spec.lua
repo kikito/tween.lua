@@ -107,14 +107,14 @@ describe('tween', function()
 
     test('Tweening should happen recursively', function()
       local subject = {1, a = {1, {2, 3}}}
-      local target =  {4, a = {4, {8, 12}}}
+      local target =  {a = {4, {8, 12}}}
       tween(3, subject, target)
       tween.update(1)
-      assert_table_equal(subject, {2, a = {2, {4, 6}}})
+      assert_table_equal(subject, {1, a = {2, {4, 6}}})
       tween.update(1)
-      assert_table_equal(subject, {3, a = {3, {6, 9}}})
+      assert_table_equal(subject, {1, a = {3, {6, 9}}})
       tween.update(1)
-      assert_table_equal(subject, target)
+      assert_table_equal(subject, {1, a = {4, {8, 12}}})
     end)
 
     test('Tweening should be chainable', function()
