@@ -8,7 +8,7 @@ local tween = {}
 
 -- private stuff
 
-tweens = setmetatable({}, {__mode = "k"})
+local tweens = setmetatable({}, {__mode = "k"})
 
 local function isCallable(f)
   local tf = type(f)
