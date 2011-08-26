@@ -48,7 +48,7 @@ h1. Interface
 
 h1. Gotchas / Warnings
 
-* @tween@ does *not* implement any hardware or software clock; you will have to provide it with the access to the hardware timers, in the form of periodic calls to @cron.update@
+* @tween@ does *not* implement any hardware or software clock; you will have to provide it with the access to the hardware timers, in the form of periodic calls to @tween.update@
 * @tween@ does not have any defined time units (seconds, milliseconds, etc). You define the units it uses by passing it a @dt@ on @tween.update@. If @dt@ is in seconds, then @tween@ will work in seconds. If @dt@ is in milliseconds, then @tween@ will work in milliseconds.
 * @tween@ can work on deeply-nested subtables (the "leaf" values have to be numbers in both the subject and the target)
 
