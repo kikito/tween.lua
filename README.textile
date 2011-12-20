@@ -97,24 +97,24 @@ They can be divided into several big families:
 * The @bounce@ family simulates the motion of an object bouncing.
 * The @elastic@ family simulates inertia in the easing, like an elastic gum.
 
-Each family (except @linear@ has 4 variants):
+Each family (except @linear@) has 4 variants:
 * @in@ starts slow, and accelerates at the end
 * @out@ starts fast, and decelerates at the end
 * @inOut@ starts and ends slow, but it's fast in the middle
 * @outIn@ starts and ends fast, but it's slow in the middle
 
 |_. family |_. in    |_. out     |_. inOut    |_. outIn    |
-|_. linear |linear   |linear     |linear      |linear      |
-|_. quad   |inQuad   |outQuad    |inOutQuad   |outInQuad   |
-|_. cubic  |inCubic  |outCubic   |inOutCubic  |outInCubic  |
-|_. quart  |inQuart  |outQuart   |inOutQuart  |outInQuart  |
-|_. quint  |inQuint  |outQuint   |inOutQuint  |outInQuint  |
-|_. expo   |inExpo   |outExpo    |inOutExpo   |outInExpo   |
-|_. sine   |inSine   |outSine    |inOutSine   |outInSine   |
-|_. circle |inCircle |outCircle  |inOutCircle |outInCircle |
-|_. back   |inBack   |outBack    |inOutBack   |outInBack   |
-|_. bounce |inBounce |outBounce  |inOutBounce |outInBounce |
-|_. elastic|inElastic|outElastic |inOutElastic|outInElascit|
+|_. "linear":https://github.com/kikito/tween.lua/raw/master/graphs/linear.png  |linear   |linear     |linear      |linear      |
+|_. "quad":https://github.com/kikito/tween.lua/raw/master/graphs/quad.png      |inQuad   |outQuad    |inOutQuad   |outInQuad   |
+|_. "cubic":https://github.com/kikito/tween.lua/raw/master/graphs/cubic.png    |inCubic  |outCubic   |inOutCubic  |outInCubic  |
+|_. "quart":https://github.com/kikito/tween.lua/raw/master/graphs/quart.png    |inQuart  |outQuart   |inOutQuart  |outInQuart  |
+|_. "quint":https://github.com/kikito/tween.lua/raw/master/graphs/quint.png    |inQuint  |outQuint   |inOutQuint  |outInQuint  |
+|_. "expo":https://github.com/kikito/tween.lua/raw/master/graphs/expo.png      |inExpo   |outExpo    |inOutExpo   |outInExpo   |
+|_. "sine":https://github.com/kikito/tween.lua/raw/master/graphs/sine.png      |inSine   |outSine    |inOutSine   |outInSine   |
+|_. "circle":https://github.com/kikito/tween.lua/raw/master/graphs/circle.png  |inCircle |outCircle  |inOutCircle |outInCircle |
+|_. "back":https://github.com/kikito/tween.lua/raw/master/graphs/back.png      |inBack   |outBack    |inOutBack   |outInBack   |
+|_. "bounce":https://github.com/kikito/tween.lua/raw/master/graphs/bounce.png  |inBounce |outBounce  |inOutBounce |outInBounce |
+|_. "elastic":https://github.com/kikito/tween.lua/raw/master/graphs/elastic.png|inElastic|outElastic |inOutElastic|outInElascit|
 
 You may want to give a look to the graphs folder on this repository to get a better idea of what I'm talking about.
 
