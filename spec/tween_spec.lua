@@ -47,10 +47,15 @@ describe('tween', function()
         assert_not_error(function() tween.start(1, {}, {}) end)
       end)
 
-      test('subject should be a table', function()
+      test('subject should be a table or userdata', function()
         assert_error(function() tween.start(1, 1, {}) end)
         assert_error(function() tween.start(1, "foo", {}) end)
+
         assert_not_error(function() tween.start(1, {}, {}) end)
+
+        local f = io.input()
+        assert_type(f, "userdata")
+        assert_not_error(function() tween.start(1, f, {}) end)
       end)
 
       test('target should be a table', function()

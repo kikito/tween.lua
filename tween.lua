@@ -50,7 +50,8 @@ end
 
 local function checkStartParams(time, subject, target, easing, callback)
   assert(type(time) == 'number' and time > 0, "time must be a positive number. Was " .. tostring(time))
-  assert(type(subject) == 'table', "subject must be a table. Was " .. tostring(subject))
+  local tsubject = type(subject)
+  assert(tsubject == 'table' or tsubject == 'userdata', "subject must be a table or userdata. Was " .. tostring(subject))
   assert(type(target)== 'table', "target must be a table. Was " .. tostring(target))
   assert(isCallable(easing), "easing must be a function or functable. Was " .. tostring(easing))
   assert(callback==nil or isCallable(callback), "callback must be nil, a function or functable. Was " .. tostring(time))
