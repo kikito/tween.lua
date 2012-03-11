@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------------------------------------
--- tween.lua - v1.0 (2011-05)
+-- tween.lua - v1.0.1 (2012-02)
 -- Enrique García Cota - enrique.garcia.cota [AT] gmail [DOT] com
 -- tweening functions for lua
 -- inspired by jquery's animate function
