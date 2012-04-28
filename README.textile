@@ -114,7 +114,7 @@ Each family (except @linear@) has 4 variants:
 |_. "circle":https://github.com/kikito/tween.lua/raw/master/graphs/circle.png  |inCircle |outCircle  |inOutCircle |outInCircle |
 |_. "back":https://github.com/kikito/tween.lua/raw/master/graphs/back.png      |inBack   |outBack    |inOutBack   |outInBack   |
 |_. "bounce":https://github.com/kikito/tween.lua/raw/master/graphs/bounce.png  |inBounce |outBounce  |inOutBounce |outInBounce |
-|_. "elastic":https://github.com/kikito/tween.lua/raw/master/graphs/elastic.png|inElastic|outElastic |inOutElastic|outInElascit|
+|_. "elastic":https://github.com/kikito/tween.lua/raw/master/graphs/elastic.png|inElastic|outElastic |inOutElastic|outInElastic|
 
 You may want to give a look to the graphs folder on this repository to get a better idea of what I'm talking about.
 
