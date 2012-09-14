@@ -23,7 +23,6 @@ tween(2, backgroundColor, {0,0,0}, 'linear', print, "hello!")
 You will need to put @tween.update@ somewhere in your game loop update function:
 
 <pre>
-
 function your_game_loop_update(dt)
   ...
   tween.update(dt)
@@ -126,6 +125,7 @@ tween(10, subject, {x=10}, 'linear')
 </pre>
 
 Well, actually, since 'linear' is the default, you can also do this:
+
 <pre>
 tween(10, subject, {x=10})
 </pre>
