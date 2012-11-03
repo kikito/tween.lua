@@ -38,7 +38,7 @@ describe('tween', function()
   end)
 
   describe('tween.start', function()
-    
+
     describe('parameters', function()
       test('time should be a positive number', function()
         assert_error(function() tween.start(0, {}, {}) end)
@@ -90,7 +90,7 @@ describe('tween', function()
         assert_not_error(function() tween.start(1, {}, {}, 'linear', function() end) end)
         assert_not_error(function() tween.start(1, {}, {}, 'linear', tween) end)
       end)
-      
+
     end)
 
   end)
@@ -137,12 +137,20 @@ describe('tween', function()
       local trafficLight = { color1 = {255,0,0}, color2 = {0,0,0}, color3 = {0,0,0} }
       local yellow = { color1 = {0,0,0}, color2 = {255,255,0}, color3 = {0,0,0} }
       local green = { color1 = {0,0,0}, color2 = {0,0,0}, color3 = {0,255,0} }
-      
+
       tween(1, trafficLight, yellow, 'linear', tween, 1, trafficLight, green)
       tween.update(1)
       assert_table_equal(trafficLight, yellow)
       tween.update(1)
       assert_table_equal(trafficLight, green)
+    end)
+
+    test('tweens are not spontaneously garbage-collected', function()
+      local subject = {0}
+      tween(1, subject, {1})
+      collectgarbage('collect')
+      tween.update(1)
+      assert_table_equal({1}, subject)
     end)
 
     test('When easing is finished, subject values should be goals', function()
@@ -174,7 +182,7 @@ describe('tween', function()
   end)
 
   describe('tween.reset', function()
-    
+
     test('it does nothing if the id isnt on the tween list', function()
       assert_not_error(function() tween.reset(nil) end)
       assert_not_error(function() tween.reset(1) end)
@@ -204,7 +212,7 @@ describe('tween', function()
   end)
 
   describe('tween.stop', function()
-    
+
     test('it does nothing if the id isnt on the tween list', function()
       assert_not_error(function() tween.stop(nil) end)
       assert_not_error(function() tween.stop(1) end)

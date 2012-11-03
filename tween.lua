@@ -8,7 +8,7 @@ local tween = {}
 
 -- private stuff
 
-local tweens = setmetatable({}, {__mode = "k"})
+local tweens -- initialized by calling to tween.stopAll()
 
 local function isCallable(f)
   local tf = type(f)
@@ -352,14 +352,6 @@ function tween.resetAll(id)
   tween.stopAll()
 end
 
-function tween.stop(id)
-  if id~=nil then tweens[id]=nil end
-end
-
-function tween.stopAll()
-  tweens = setmetatable({}, {__mode = "k"})
-end
-
 function tween.update(dt)
   assert(type(dt) == 'number' and dt > 0, "dt must be a positive number")
   local expired = {}
@@ -370,7 +362,15 @@ function tween.update(dt)
   for i=1, #expired do finishTween(expired[i]) end
 end
 
+function tween.stop(id)
+  if id~=nil then tweens[id]=nil end
+end
 
+function tween.stopAll()
+  tweens = {}
+end
+
+tween.stopAll()
 
 return tween
 
