@@ -22,6 +22,10 @@ end
 
 local function copyTables(destination, keysTable, valuesTable)
   valuesTable = valuesTable or keysTable
+  local mt = getmetatable(keysTable)
+  if mt and getmetatable(destination) == nil then
+    setmetatable(destination, mt)
+  end
   for k,v in pairs(keysTable) do
     if type(v) == 'table' then
       destination[k] = copyTables({}, v, valuesTable[k])
