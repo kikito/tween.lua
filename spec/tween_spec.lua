@@ -357,6 +357,34 @@ describe('tween', function()
                            19.753766811903,19.938346674663,20})
   end)
 
+  describe('copy-target', function()
+    test('a changing target should not affect a tween in progress', function()
+      local a = {1}
+      local b = {3}
+
+      tween(2, a, b, 'linear', count)
+
+      b[1] = 10
+      tween.update(1)           -- 1
+      assert_equal(a[1], 2)
+
+      tween.update(1)           -- 2
+      assert_equal(a[1], 3)
+    end)
+    test('a changing target should not affect final values of a tween', function()
+      local a = {1}
+      local b = {3}
+
+      tween(2, a, b, 'linear', count)
+
+      tween.update(1)           -- 1
+
+      b[1] = 10
+      tween.update(1)           -- 2
+      assert_equal(a[1], 3)
+    end)
+  end)
+
 end)
 
 
