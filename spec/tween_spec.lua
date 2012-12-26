@@ -356,6 +356,43 @@ describe('tween', function()
                            17.820130483767,18.477590650226,19.021130325903,19.447398407954,
                            19.753766811903,19.938346674663,20})
   end)
+  
+  describe( 'preserve-metatables', function()
+    test('A completed tween should preserve metatables in the interpolated table', function()
+      local mt = {}
+      local a = { val = 1}
+      local b = { val = 2}
+
+      setmetatable(a, mt)
+      setmetatable(b, mt)
+
+      tween(1, a, b)
+      
+      tween.update(1)           -- 1
+
+      assert_equal(b.val, 2)
+      assert_not_nil(getmetatable(a))
+      assert_equal(mt, getmetatable(a))
+    end)
+    test('A completed tween should preserve metatables in the interpolated subtable', function()
+      local mt = {}
+      local a = { val = 1}
+      local b = { val = 2}
+
+      setmetatable(a, mt)
+      setmetatable(b, mt)
+
+      local c = { t = a }
+
+      tween(1, c, { t = b })
+      
+      tween.update(1)           -- 1
+
+      assert_equal(c.t.val, 2)
+      assert_not_nil(getmetatable(c.t))
+      assert_equal(mt, getmetatable(c.t))
+    end)
+  end)
 
 end)
 
