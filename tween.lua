@@ -77,7 +77,7 @@ local function newTween(time, subject, target, easing, callback, args)
   local self = {
     time = time,
     subject = subject,
-    target = target,
+    target = copyTables({},target),
     easing = easing,
     callback = callback,
     args = args,
