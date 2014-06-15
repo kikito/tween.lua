@@ -29,11 +29,15 @@ local fadeTween = tween.new(2, properties, {bgcolor = {0,0,0}, fgcolor={255,0,0}
 fadeTween:update(dt)
 ```
 
-# Demos
+# Demo
 
 There is a demo in the "demo" branch of this repo:
 
 https://github.com/kikito/tween.lua/tree/demo
+
+![demo image](file:///Users/kikito/Desktop/tween-demo.gif)
+
+You will need [LÖVE](http://love2d.org) to execute the demo.
 
 # Interface
 
