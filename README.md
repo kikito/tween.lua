@@ -11,20 +11,20 @@ local tween = require 'tween'
 
 -- increase the volume of music from 0 to 5 in 10 seconds
 local music = { volume = 0, path = "path/to/file.mp3" }
-local musicTween = tween.new(10, music, { volume = 5 })
+local musicTween = tween.new(10, music, {volume = 5})
 ...
 musicTween:update(dt)
 
 -- make some text fall from the top of the screen, bouncing on y=300, in 4 seconds
 local label = { x=200, y=0, text = "hello" }
-local labelTween = tween(4, label, { y=300 }, 'outBounce')
+local labelTween = tween.new(4, label, {y=300}, 'outBounce')
 ...
 labelTween:update(dt)
 
 -- fade background from white to black and foregrond from black to red in 2 seconds
 -- Notice that you can use subtables with tween
 local properties = {bgcolor = {255,255,255}, fgcolor = {0,0,0}}
-local fadeTween = tween(2, properties, {bgcolor = {0,0,0}, fgcolor={255,0,0}, 'linear')
+local fadeTween = tween.new(2, properties, {bgcolor = {0,0,0}, fgcolor={255,0,0}}, 'linear')
 ...
 fadeTween:update(dt)
 ```
