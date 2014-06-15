@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/kikito/tween.lua.svg?branch=master)](https://travis-ci.org/kikito/tween.lua)
 
-Tweening in Lua. Based on "jQuery's animate function"(http://api.jquery.com/animate/
+tween.lua is a small library to perform [tweening](http://en.wikipedia.org/wiki/Tweening) in Lua. It has a minimal
+interface, and it comes with several easing functions.
 
 # Examples
 
@@ -104,9 +105,11 @@ This method is equivalent to `t:set(0)`.
 
 Easing functions are functions that express how slow/fast the interpolation happens in tween.
 
-tween.lua comes with a lot of easing functions already built-in (adapted from "Emmanuel Oga's easing library"(https://github.com/EmmanuelOga/easing
+`tween.lua` comes with 45 default easing functions already built-in (adapted from [Emmanuel Oga's easing library](https://github.com/EmmanuelOga/easing).
 
-They can be divided into several big families:
+The easing functions can be found in the table `tween.easing`.
+
+They can be divided into several families:
 
 * `linear` is the default interpolation. It's the simplest easing function.
 * `quad`, `cubic`, `quart`, `quint`, `expo`, `sine` and `circle` are all "smooth" curves that will make transitions look natural.
