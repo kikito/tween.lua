@@ -1,5 +1,5 @@
 local tween = {
-  _VERSION     = 'tween 2.0',
+  _VERSION     = 'tween 2.0.0',
   _DESCRIPTION = 'tweening for lua',
   _URL         = 'https://github.com/kikito/tween.lua',
   _LICENSE     = [[
@@ -277,8 +277,8 @@ local function checkSubjectAndTargetRecursively(subject, target, path)
   end
 end
 
-local function checkNewParams(time, subject, target, easing)
-  assert(type(time) == 'number' and time > 0, "time must be a positive number. Was " .. tostring(time))
+local function checkNewParams(duration, subject, target, easing)
+  assert(type(duration) == 'number' and duration > 0, "duration must be a positive number. Was " .. tostring(duration))
   local tsubject = type(subject)
   assert(tsubject == 'table' or tsubject == 'userdata', "subject must be a table or userdata. Was " .. tostring(subject))
   assert(type(target)== 'table', "target must be a table. Was " .. tostring(target))
@@ -298,13 +298,13 @@ local function getEasingFunction(easing)
   return easing
 end
 
-local function performEasingOnSubject(subject, target, initial, clock, time, easing)
+local function performEasingOnSubject(subject, target, initial, clock, duration, easing)
   local t,b,c,d
   for k,v in pairs(target) do
     if type(v) == 'table' then
-      performEasingOnSubject(subject[k], v, initial[k], clock, time, easing)
+      performEasingOnSubject(subject[k], v, initial[k], clock, duration, easing)
     else
-      t,b,c,d = clock, initial[k], v - initial[k], time
+      t,b,c,d = clock, initial[k], v - initial[k], duration
       subject[k] = easing(t,b,c,d)
     end
   end
@@ -325,18 +325,18 @@ function Tween:set(clock)
     self.clock = 0
     copyTables(self.subject, self.initial)
 
-  elseif self.clock >= self.time then -- the tween has expired
+  elseif self.clock >= self.duration then -- the tween has expired
 
-    self.clock = self.time
+    self.clock = self.duration
     copyTables(self.subject, self.target)
 
   else
 
-    performEasingOnSubject(self.subject, self.target, self.initial, self.clock, self.time, self.easing)
+    performEasingOnSubject(self.subject, self.target, self.initial, self.clock, self.duration, self.easing)
 
   end
 
-  return self.clock >= self.time
+  return self.clock >= self.duration
 end
 
 function Tween:reset()
@@ -351,11 +351,11 @@ end
 
 -- Public interface
 
-function tween.new(time, subject, target, easing)
+function tween.new(duration, subject, target, easing)
   easing = getEasingFunction(easing)
-  checkNewParams(time, subject, target, easing)
+  checkNewParams(duration, subject, target, easing)
   return setmetatable({
-    time      = time,
+    duration  = duration,
     subject   = subject,
     target    = target,
     easing    = easing,

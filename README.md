@@ -34,12 +34,12 @@ fadeTween:update(dt)
 ## Tween creation
 
 ``` lua
-local t = tween.new(time, subject, target, [easing])
+local t = tween.new(duration, subject, target, [easing])
 ```
 
 Creates a new tween.
 
-* `time` means how much the change will take until it's finished. It must be a positive number.
+* `duration` means how much the change will take until it's finished. It must be a positive number.
 * `subject` must be a table with at least one key-value. Its values will be gradually changed by the tween until they look like `target`. All the values must be numbers, or tables with numbers.
 * `target` must be a table with at least the same keys as `subject`. Other keys will be ignored.
 * `easing` can be either a function or a function name (see the easing section below). It's default value is `'linear'`
@@ -56,10 +56,13 @@ local complete = t:update(dt)
 Gradually changes the contents of `subject` to that it looks more like `target` as time passes.
 
 * `t` is a tween returned by `tween.new`
-* `dt` must be a positive number. It will be added to the internal time counter of the tween. Then `subject`'s values will be updated so that they approach `target`'s using the selected easing function.
-* `complete` is `true` if the tween has reached its limit (its *internal clock* is `>= time`). It is false otherwise.
+* `dt` must be positive number. It will be added to the internal time counter of the tween. Then `subject`'s values will be updated so that they approach `target`'s using the selected easing function.
+* `complete` is `true` if the tween has reached its limit (its *internal clock* is `>= duration`). It is false otherwise.
 
 When the tween is complete, the values in `subject` will be equal to `target`'s. The way they change over time will depend on the chosen easing function.
+
+If `dt` is positive, the easing will be applied until the internal clock equals `t.duration`, at which point the easing will stop. If it is negative,
+the easing will play "backwards", until it reaches the initial value.
 
 This method is roughtly equivalent to `t:set(self.clock + dt)`.
 
@@ -67,14 +70,14 @@ This method is roughtly equivalent to `t:set(self.clock + dt)`.
 local complete = t:set(clock)
 ```
 
-Moves a tween's internal clock to a particular time.
+Moves a tween's internal clock to a particular moment.
 
 * `t` is a tween returned by `tween.new`
 * `clock` is a positive number or 0. It's the new value of the tween's internal clock.
 * `complete` works like in `t:update`; it's `true` if the tween has reached its end, and `false` otherwise.
 
-If clock is greater than `t.time`, then the values in `t.subject` will be equal to `t.target`, and `t.clock` will
-be equal to `t.time`.
+If clock is greater than `t.duration`, then the values in `t.subject` will be equal to `t.target`, and `t.clock` will
+be equal to `t.duration`.
 
 
 ``` lua
