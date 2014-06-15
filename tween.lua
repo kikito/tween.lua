@@ -1,118 +1,32 @@
------------------------------------------------------------------------------------------------------------------------
--- tween.lua - v1.0 (2011-05)
--- Enrique García Cota - enrique.garcia.cota [AT] gmail [DOT] com
--- tweening functions for lua
--- inspired by jquery's animate function
------------------------------------------------------------------------------------------------------------------------
-local tween = {}
+local tween = {
+  _VERSION     = 'tween 2.0',
+  _DESCRIPTION = 'tweening for lua',
+  _URL         = 'https://github.com/kikito/tween.lua',
+  _LICENSE     = [[
+    MIT LICENSE
 
--- private stuff
+    Copyright (c) 2014 Enrique García Cota, Yuichi Tateno, Emmanuel Oga
 
-tweens = setmetatable({}, {__mode = "k"})
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
 
-local function isCallable(f)
-  local tf = type(f)
-  if tf == 'function' then return true end
-  if tf == 'table' then
-    local mt = getmetatable(f)
-    return (type(mt) == 'table' and type(mt.__call) == 'function')
-  end
-  return false
-end
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
 
-local function copyTables(destination, keysTable, valuesTable)
-  valuesTable = valuesTable or keysTable
-  for k,v in pairs(keysTable) do
-    if type(v) == 'table' then
-      destination[k] = copyTables({}, v, valuesTable[k])
-    else
-      destination[k] = valuesTable[k]
-    end
-  end
-  return destination
-end
-
-local function checkSubjectAndTargetRecursively(subject, target, path)
-  path = path or {}
-  local targetType, newPath
-  for k,targetValue in pairs(target) do
-    targetType, newPath = type(targetValue), copyTables({}, path)
-    table.insert(newPath, tostring(k))
-    if targetType == 'number' then
-      assert(type(subject[k]) == 'number', "Parameter '" .. table.concat(newPath,'/') .. "' is missing from subject or isn't a number")
-    elseif targetType == 'table' then
-      checkSubjectAndTargetRecursively(subject[k], targetValue, newPath)
-    else
-      assert(targetType == 'number', "Parameter '" .. table.concat(newPath,'/') .. "' must be a number or table of numbers")
-    end
-  end
-end
-
-local function checkStartParams(time, subject, target, easing, callback)
-  assert(type(time) == 'number' and time > 0, "time must be a positive number. Was " .. tostring(time))
-  assert(type(subject) == 'table', "subject must be a table. Was " .. tostring(subject))
-  assert(type(target)== 'table', "target must be a table. Was " .. tostring(target))
-  assert(isCallable(easing), "easing must be a function or functable. Was " .. tostring(easing))
-  assert(callback==nil or isCallable(callback), "callback must be nil, a function or functable. Was " .. tostring(time))
-  checkSubjectAndTargetRecursively(subject, target)
-
-end
-
-local function getEasingFunction(easing)
-  easing = easing or "linear"
-  if type(easing) == 'string' then
-    local name = easing
-    easing = tween.easing[name]
-    assert(type(easing) == 'function', "The easing function name '" .. name .. "' is invalid")
-  end
-  return easing
-end
-
-local function newTween(time, subject, target, easing, callback, args)
-  local self = {
-    time = time,
-    subject = subject,
-    target = target,
-    easing = easing,
-    callback = callback,
-    args = args,
-    initial = copyTables({}, target, subject),
-    running = 0
-  }
-  tweens[self] = self
-  return self
-end
-
-local function easeWithTween(self, subject, target, initial)
-  local t,b,c,d
-  for k,v in pairs(target) do
-    if type(v)=='table' then
-      easeWithTween(self, subject[k], v, initial[k])
-    else
-      t,b,c,d = self.running, initial[k], v - initial[k], self.time
-      subject[k] = self.easing(t,b,c,d)
-    end
-  end
-end
-
-local function updateTween(self, dt)
-  self.running = self.running + dt
-  easeWithTween(self, self.subject, self.target, self.initial)
-end
-
-local function hasExpiredTween(self)
-  return self.running >= self.time
-end
-
-local function finishTween(self)
-  copyTables(self.subject, self.target)
-  if self.callback then self.callback(unpack(self.args)) end
-  tween.stop(self)
-end
-
-local function resetTween(self)
-  copyTables(self.subject, self.initial)
-end
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  ]]
+}
 
 -- easing
 
@@ -314,7 +228,7 @@ local function outInBounce(t, b, c, d)
 end
 
 tween.easing = {
-  linear = linear,
+  linear    = linear,
   inQuad    = inQuad,    outQuad    = outQuad,    inOutQuad    = inOutQuad,    outInQuad    = outInQuad,
   inCubic   = inCubic,   outCubic   = outCubic,   inOutCubic   = inOutCubic,   outInCubic   = outInCubic,
   inQuart   = inQuart,   outQuart   = outQuart,   inOutQuart   = inOutQuart,   outInQuart   = outInQuart,
@@ -324,52 +238,132 @@ tween.easing = {
   inCirc    = inCirc,    outCirc    = outCirc,    inOutCirc    = inOutCirc,    outInCirc    = outInCirc,
   inElastic = inElastic, outElastic = outElastic, inOutElastic = inOutElastic, outInElastic = outInElastic,
   inBack    = inBack,    outBack    = outBack,    inOutBack    = inOutBack,    outInBack    = outInBack,
-  inBounce  = inBounce,  outBounce  = outBounce,  inOutBounce  = inOutBounce,  outInBounce  = outInBounce,
+  inBounce  = inBounce,  outBounce  = outBounce,  inOutBounce  = inOutBounce,  outInBounce  = outInBounce
 }
 
 
--- public functions
 
-function tween.start(time, subject, target, easing, callback, ...)
+-- private stuff
+
+local function copyTables(destination, keysTable, valuesTable)
+  valuesTable = valuesTable or keysTable
+  local mt = getmetatable(keysTable)
+  if mt and getmetatable(destination) == nil then
+    setmetatable(destination, mt)
+  end
+  for k,v in pairs(keysTable) do
+    if type(v) == 'table' then
+      destination[k] = copyTables({}, v, valuesTable[k])
+    else
+      destination[k] = valuesTable[k]
+    end
+  end
+  return destination
+end
+
+local function checkSubjectAndTargetRecursively(subject, target, path)
+  path = path or {}
+  local targetType, newPath
+  for k,targetValue in pairs(target) do
+    targetType, newPath = type(targetValue), copyTables({}, path)
+    table.insert(newPath, tostring(k))
+    if targetType == 'number' then
+      assert(type(subject[k]) == 'number', "Parameter '" .. table.concat(newPath,'/') .. "' is missing from subject or isn't a number")
+    elseif targetType == 'table' then
+      checkSubjectAndTargetRecursively(subject[k], targetValue, newPath)
+    else
+      assert(targetType == 'number', "Parameter '" .. table.concat(newPath,'/') .. "' must be a number or table of numbers")
+    end
+  end
+end
+
+local function checkNewParams(time, subject, target, easing)
+  assert(type(time) == 'number' and time > 0, "time must be a positive number. Was " .. tostring(time))
+  local tsubject = type(subject)
+  assert(tsubject == 'table' or tsubject == 'userdata', "subject must be a table or userdata. Was " .. tostring(subject))
+  assert(type(target)== 'table', "target must be a table. Was " .. tostring(target))
+  assert(type(easing)=='function', "easing must be a function. Was " .. tostring(easing))
+  checkSubjectAndTargetRecursively(subject, target)
+end
+
+local function getEasingFunction(easing)
+  easing = easing or "linear"
+  if type(easing) == 'string' then
+    local name = easing
+    easing = tween.easing[name]
+    if type(easing) ~= 'function' then
+      error("The easing function name '" .. name .. "' is invalid")
+    end
+  end
+  return easing
+end
+
+local function performEasingOnSubject(subject, target, initial, clock, time, easing)
+  local t,b,c,d
+  for k,v in pairs(target) do
+    if type(v) == 'table' then
+      performEasingOnSubject(subject[k], v, initial[k], clock, time, easing)
+    else
+      t,b,c,d = clock, initial[k], v - initial[k], time
+      subject[k] = easing(t,b,c,d)
+    end
+  end
+end
+
+-- Tween methods
+
+local Tween = {}
+local Tween_mt = {__index = Tween}
+
+function Tween:set(clock)
+  assert(type(clock) == 'number', "clock must be a positive number or 0")
+
+  self.clock = clock
+
+  if self.clock <= 0 then
+
+    self.clock = 0
+    copyTables(self.subject, self.initial)
+
+  elseif self.clock >= self.time then -- the tween has expired
+
+    self.clock = self.time
+    copyTables(self.subject, self.target)
+
+  else
+
+    performEasingOnSubject(self.subject, self.target, self.initial, self.clock, self.time, self.easing)
+
+  end
+
+  return self.clock >= self.time
+end
+
+function Tween:reset()
+  return self:set(0)
+end
+
+function Tween:update(dt)
+  assert(type(dt) == 'number', "dt must be a number")
+  return self:set(self.clock + dt)
+end
+
+
+-- Public interface
+
+function tween.new(time, subject, target, easing)
   easing = getEasingFunction(easing)
-  checkStartParams(time, subject, target, easing, callback)
-  return newTween(time, subject, target, easing, callback, {...})
+  checkNewParams(time, subject, target, easing)
+  return setmetatable({
+    time      = time,
+    subject   = subject,
+    target    = target,
+    easing    = easing,
+
+    initial   = copyTables({},target,subject),
+    clock     = 0
+  }, Tween_mt)
 end
-
-setmetatable(tween, { __call = function(t, ...) return tween.start(...) end })
-
-function tween.reset(id)
-  local tw = tweens[id]
-  if tw then
-    resetTween(tw)
-    tween.stop(tw)
-  end
-end
-
-function tween.resetAll(id)
-  for _,tw in pairs(tweens) do copyTables(tw.subject, tw.initial) end
-  tween.stopAll()
-end
-
-function tween.stop(id)
-  if id~=nil then tweens[id]=nil end
-end
-
-function tween.stopAll()
-  tweens = setmetatable({}, {__mode = "k"})
-end
-
-function tween.update(dt)
-  assert(type(dt) == 'number' and dt > 0, "dt must be a positive number")
-  local expired = {}
-  for _,t in pairs(tweens) do
-    updateTween(t, dt)
-    if hasExpiredTween(t) then table.insert(expired, t) end
-  end
-  for i=1, #expired do finishTween(expired[i]) end
-end
-
-
 
 return tween
 
