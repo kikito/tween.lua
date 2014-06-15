@@ -298,13 +298,13 @@ local function getEasingFunction(easing)
   return easing
 end
 
-local function performEasingOnSubject(subject, target, initial, running, time, easing)
+local function performEasingOnSubject(subject, target, initial, clock, time, easing)
   local t,b,c,d
   for k,v in pairs(target) do
     if type(v) == 'table' then
-      performEasingOnSubject(subject[k], v, initial[k], running, time, easing)
+      performEasingOnSubject(subject[k], v, initial[k], clock, time, easing)
     else
-      t,b,c,d = running, initial[k], v - initial[k], time
+      t,b,c,d = clock, initial[k], v - initial[k], time
       subject[k] = easing(t,b,c,d)
     end
   end
@@ -315,28 +315,28 @@ end
 local Tween = {}
 local Tween_mt = {__index = Tween}
 
-function Tween:setRunning(running)
-  assert(type(running) == 'number' and running >= 0, "running must be a positive number or 0")
+function Tween:set(clock)
+  assert(type(clock) == 'number' and clock >= 0, "clock must be a positive number or 0")
 
-  self.running = running
-  performEasingOnSubject(self.subject, self.target, self.initial, self.running, self.time, self.easing)
+  self.clock = clock
+  performEasingOnSubject(self.subject, self.target, self.initial, self.clock, self.time, self.easing)
 
-  if self.running >= self.time then -- the tween has expired
-    self.running = self.time
+  if self.clock >= self.time then -- the tween has expired
+    self.clock = self.time
     copyTables(self.subject, self.target, self.subject)
   end
 
-  return self.running >= self.time
+  return self.clock >= self.time
 end
 
 function Tween:reset()
-  return self:setRunning(0)
+  return self:set(0)
 end
 
 function Tween:update(dt)
   assert(type(dt) == 'number', "dt must be a number")
-  if self.running >= self.time then return true end
-  return self:setRunning(self.running + dt)
+  if self.clock >= self.time then return true end
+  return self:set(self.clock + dt)
 end
 
 
@@ -352,7 +352,7 @@ function tween.new(time, subject, target, easing)
     easing    = easing,
 
     initial   = copyTables({},target,subject),
-    running   = 0
+    clock     = 0
   }, Tween_mt)
 end
 

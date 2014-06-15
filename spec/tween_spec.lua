@@ -290,7 +290,7 @@ describe('Tween', function()
       t:update(1)
       t:reset()
       assert.equals(subject[1], 1)
-      assert.equals(t.running, 0)
+      assert.equals(t.clock, 0)
     end)
   end)
 
