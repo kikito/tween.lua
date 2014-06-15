@@ -316,14 +316,24 @@ local Tween = {}
 local Tween_mt = {__index = Tween}
 
 function Tween:set(clock)
-  assert(type(clock) == 'number' and clock >= 0, "clock must be a positive number or 0")
+  assert(type(clock) == 'number', "clock must be a positive number or 0")
 
   self.clock = clock
-  performEasingOnSubject(self.subject, self.target, self.initial, self.clock, self.time, self.easing)
 
-  if self.clock >= self.time then -- the tween has expired
+  if self.clock <= 0 then
+
+    self.clock = 0
+    copyTables(self.subject, self.initial)
+
+  elseif self.clock >= self.time then -- the tween has expired
+
     self.clock = self.time
-    copyTables(self.subject, self.target, self.subject)
+    copyTables(self.subject, self.target)
+
+  else
+
+    performEasingOnSubject(self.subject, self.target, self.initial, self.clock, self.time, self.easing)
+
   end
 
   return self.clock >= self.time
@@ -335,7 +345,6 @@ end
 
 function Tween:update(dt)
   assert(type(dt) == 'number', "dt must be a number")
-  if self.clock >= self.time then return true end
   return self:set(self.clock + dt)
 end
 
