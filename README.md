@@ -36,9 +36,11 @@ There is a demo in the "demo" branch of this repo:
 
 https://github.com/kikito/tween.lua/tree/demo
 
-![demo image](file:///Users/kikito/Desktop/tween-demo.gif)
+![demo image](https://kikito.github.io/tween.lua/img/tween-demo.gif)
 
 You will need [LÖVE](http://love2d.org) to execute the demo.
+
+In the animation above, you can see how the user can move time "forwards or backwards" by pressing and releasing the space key.
 
 # Interface
 
