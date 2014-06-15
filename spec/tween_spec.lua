@@ -1,249 +1,67 @@
 local tween = require 'tween'
 
 describe('tween', function()
+  describe('.new', function()
+    it('checks parameters', function()
+      -- time should be a positive number
+      assert.error(function() tween.new(0, {}, {}) end)
+      assert.error(function() tween.new(-1, {}, {}) end)
+      assert.error(function() tween.new('foo', {}, {}) end)
+      assert.not_error(function() tween.new(1, {}, {}) end)
 
-  local counter = 0
-  local function count(x)
-    x = x or 1
-    counter = counter + x
-  end
+      --subject should be a table or userdata
+      assert.error(function() tween.new(1, 1, {}) end)
+      assert.error(function() tween.new(1, "foo", {}) end)
 
-  local function assert_table_equal(t1, t2)
-    local type1, type2 = type(t1), type(t2)
-    assert_equal(type1, type2)
-    if type(t1)=='table' then
-      for k,v in pairs(t1) do assert_table_equal(v, t2[k]) end
-    else
-      assert_equal(t1, t2)
-    end
-  end
+      assert.not_error(function() tween.new(1, {}, {}) end)
 
-  local function testEasing(easing, values)
-    test(easing .. ' works as expected', function()
-      local subject = {0}
-      local steps = #values
-      local target = {values[steps]}
-      local dt = 1
-      tween(steps, subject, target, easing)
-      for i=1, steps do
-        tween.update(dt)
-        assert_less_than(math.abs(subject[1] - values[i]), 0.1)
-      end
-    end)
-  end
+      local f = io.input()
+      assert.equal(type(f), "userdata")
+      assert.not_error(function() tween.new(1, f, {}) end)
 
-  before(function()
-    counter = 0
-    tween.stopAll()
-  end)
+      -- target should be a table'
+      assert.error(function() tween.new(1, {}, 1) end)
+      assert.error(function() tween.new(1, {}, "foo") end)
+      assert.not_error(function() tween.new(1, {}, {}) end)
 
-  describe('tween.start', function()
+      -- target data can only be numbers or tables with numbers
+      assert.error(function() tween.new(1, {1,2}, {'a', 'b'}) end)
+      assert.error(function() tween.new(1, {x=1}, {x = print}) end)
+      assert.not_error(function() tween.new(1, {x=1}, {x = 2}) end)
+      assert.not_error(function() tween.new(1, {color={255,255,255}}, {color={0,0,0}}) end)
 
-    describe('parameters', function()
-      test('time should be a positive number', function()
-        assert_error(function() tween.start(0, {}, {}) end)
-        assert_error(function() tween.start(-1, {}, {}) end)
-        assert_error(function() tween.start('foo', {}, {}) end)
-        assert_not_error(function() tween.start(1, {}, {}) end)
-      end)
+      -- subject data must correspond to target data
+      assert.error(function() tween.new(1, {}, {x=1}) end)
+      assert.error(function() tween.new(1, {y=1}, {x = 1}) end)
+      assert.error(function() tween.new(1, {y=1}, {y = {1,2,3}}) end)
+      assert.error(function() tween.new(1, {a={b={c=3}}}, {a=1}) end)
+      assert.not_error(function() tween.new(1, {1, a={b={c=3}}}, {3, a={b={c=1}}}) end)
 
-      test('subject should be a table or userdata', function()
-        assert_error(function() tween.start(1, 1, {}) end)
-        assert_error(function() tween.start(1, "foo", {}) end)
-
-        assert_not_error(function() tween.start(1, {}, {}) end)
-
-        local f = io.input()
-        assert_type(f, "userdata")
-        assert_not_error(function() tween.start(1, f, {}) end)
-      end)
-
-      test('target should be a table', function()
-        assert_error(function() tween.start(1, {}, 1) end)
-        assert_error(function() tween.start(1, {}, "foo") end)
-        assert_not_error(function() tween.start(1, {}, {}) end)
-      end)
-
-      test('target data can only be numbers or tables with numbers', function()
-        assert_error(function() tween.start(1, {1,2}, {'a', 'b'}) end)
-        assert_error(function() tween.start(1, {x=1}, {x = print}) end)
-        assert_not_error(function() tween.start(1, {x=1}, {x = 2}) end)
-        assert_not_error(function() tween.start(1, {color={255,255,255}}, {color={0,0,0}}) end)
-      end)
-
-      test('subject data must correspond to target data', function()
-        assert_error(function() tween.start(1, {}, {x=1}) end)
-        assert_error(function() tween.start(1, {y=1}, {x = 1}) end)
-        assert_error(function() tween.start(1, {y=1}, {y = {1,2,3}}) end)
-        assert_error(function() tween.start(1, {a={b={c=3}}}, {a=1}) end)
-        assert_not_error(function() tween.start(1, {1, a={b={c=3}}}, {3, a={b={c=1}}}) end)
-      end)
-
-      test('easing must be a function or valid easing function name, or nil', function()
-        assert_error(function() tween.start(1, {}, {}, 'foo') end)
-        assert_not_error(function() tween.start(1, {}, {}, function() end) end)
-        assert_not_error(function() tween.start(1, {}, {}, 'linear') end)
-      end)
-
-      test('callback must be callable or nil', function()
-        assert_error(function() tween.start(1, {}, {}, 'linear', 'foo') end)
-        assert_not_error(function() tween.start(1, {}, {}, 'linear', function() end) end)
-        assert_not_error(function() tween.start(1, {}, {}, 'linear', tween) end)
-      end)
-
-    end)
-
-  end)
-
-  describe('tween', function()
-    test('Should work just like tween.start', function()
-      assert_not_error(function() tween(1, {}, {}) end)
-      assert_not_nil(tween(1, {}, {}))
-    end)
-  end)
-
-  describe('tween.update', function()
-    test('Should only admit positive numbers for dt', function()
-      assert_error(function() tween.update(-1) end)
-      assert_error(function() tween.update(0) end)
-      assert_error(function() tween.update('foo') end)
-      assert_not_error(function() tween.update(1) end)
-    end)
-
-    test('Tweening should happen recursively', function()
-      local subject = {1, a = {1, {2, 3}}}
-      local target =  {a = {4, {8, 12}}}
-      tween(3, subject, target)
-      tween.update(1)
-      assert_table_equal(subject, {1, a = {2, {4, 6}}})
-      tween.update(1)
-      assert_table_equal(subject, {1, a = {3, {6, 9}}})
-      tween.update(1)
-      assert_table_equal(subject, {1, a = {4, {8, 12}}})
-    end)
-
-    test('Tweening should be chainable', function()
-      local subject = {1}
-      local t = tween(1, subject, {2}, 'linear', tween, 1, subject, {3}, 'linear', tween, 1, subject, {4})
-      tween.update(1)
-      assert_equal(subject[1], 2)
-      tween.update(1)
-      assert_equal(subject[1], 3)
-      tween.update(1)
-      assert_equal(subject[1], 4)
-    end)
-
-    test('Traffic Light', function()
-      local trafficLight = { color1 = {255,0,0}, color2 = {0,0,0}, color3 = {0,0,0} }
-      local yellow = { color1 = {0,0,0}, color2 = {255,255,0}, color3 = {0,0,0} }
-      local green = { color1 = {0,0,0}, color2 = {0,0,0}, color3 = {0,255,0} }
-
-      tween(1, trafficLight, yellow, 'linear', tween, 1, trafficLight, green)
-      tween.update(1)
-      assert_table_equal(trafficLight, yellow)
-      tween.update(1)
-      assert_table_equal(trafficLight, green)
-    end)
-
-    test('tweens are not spontaneously garbage-collected', function()
-      local subject = {0}
-      tween(1, subject, {1})
-      collectgarbage('collect')
-      tween.update(1)
-      assert_table_equal({1}, subject)
-    end)
-
-    test('When easing is finished, subject values should be goals', function()
-      local a = {1}
-      local b = {x = 1, y = 1}
-      local c = {color = {0,0,0}}
-
-      tween(1, a, {2}, 'linear', count)
-      tween(3, b, {x = 2, y = 2}, 'linear', count, 2)
-      tween(5, c, {color = {255,30,50}})
-
-      tween.update(1)           -- 1
-      assert_equal(a[1], 2)
-      assert_equal(counter, 1)
-
-      tween.update(1)           -- 2
-      assert_equal(a[1], 2)
-      assert_equal(counter, 1)
-
-      tween.update(1)           -- 3
-      assert_table_equal(b, {x=2, y=2})
-      assert_equal(counter, 3)
-
-      tween.update(2)           -- 5
-      assert_table_equal(b, {x=2, y=2})
-      assert_table_equal(c, {color={255,30,50}})
-      assert_equal(counter, 3)
-    end)
-  end)
-
-  describe('tween.reset', function()
-
-    test('it does nothing if the id isnt on the tween list', function()
-      assert_not_error(function() tween.reset(nil) end)
-      assert_not_error(function() tween.reset(1) end)
-      assert_not_error(function() tween.reset('foo') end)
-    end)
-
-    test('it moves the subject back to its initial state, and cancels movement', function()
-      local subject = {1}
-      local id = tween(2, subject, {3})
-      tween.update(1)
-      tween.reset(id)
-      assert_equal(subject[1], 1)
-    end)
-
-  end)
-
-  describe('tween.resetAll', function()
-    test('it moves all the subjects back to their initial state', function()
-      local a,b = {1},{1}
-      tween(2, a, {3})
-      tween(2, b, {3})
-      tween.update(1)
-      tween.resetAll()
-      assert_equal(a[1], 1)
-      assert_equal(b[1], 1)
-    end)
-  end)
-
-  describe('tween.stop', function()
-
-    test('it does nothing if the id isnt on the tween list', function()
-      assert_not_error(function() tween.stop(nil) end)
-      assert_not_error(function() tween.stop(1) end)
-      assert_not_error(function() tween.stop('foo') end)
-    end)
-
-    test('it moves stops any tween - without resetting their state', function()
-      local subject = {1}
-      local id = tween(2, subject, {3})
-      tween.update(1)
-      tween.stop(id)
-      tween.update(1)
-      assert_equal(subject[1], 2)
-    end)
-
-  end)
-
-  describe('tween.stopAll', function()
-    test('it stops all the tweens', function()
-      local a,b = {1},{1}
-      tween(2, a, {3})
-      tween(2, b, {3})
-      tween.update(1)
-      tween.stopAll()
-      tween.update(1)
-      assert_equal(a[1], 2)
-      assert_equal(b[1], 2)
+      -- easing must be a function or valid easing function name, or nil
+      assert.error(function() tween.new(1, {}, {}, 'foo') end)
+      assert.not_error(function() tween.new(1, {}, {}, function() end) end)
+      assert.not_error(function() tween.new(1, {}, {}, 'linear') end)
     end)
   end)
 
   describe('easing', function()
+
+    local testEasing = function(easing, values)
+      describe(easing, function()
+        it('works as expected', function()
+          local subject = {0}
+          local steps = #values
+          local target = {values[steps]}
+          local dt = 1
+          local t = tween.new(steps, subject, target, easing)
+          for i=1, steps do
+            t:update(dt)
+            assert.is_true(math.abs(subject[1] - values[i]) < 0.02)
+          end
+        end)
+      end)
+    end
+
     testEasing('inBack', {-0.07832505,-0.2862844,-0.58335435,-0.9290112,-1.28273125,-1.6039908,-1.85226615,-1.9870336,
                           -1.96776945,-1.75395,-1.30505155,-0.5805504,0.46007715,1.8573548,3.65180625,5.8839552,
                           8.59432535,11.8234404,15.61182405,20})
@@ -356,69 +174,123 @@ describe('tween', function()
                            17.820130483767,18.477590650226,19.021130325903,19.447398407954,
                            19.753766811903,19.938346674663,20})
   end)
-  
-  describe( 'preserve-metatables', function()
-    test('A completed tween should preserve metatables in the interpolated table', function()
-      local mt = {}
-      local a = { val = 1}
-      local b = { val = 2}
+end)
 
-      setmetatable(a, mt)
-      setmetatable(b, mt)
+describe('Tween', function()
 
-      tween(1, a, b)
-      
-      tween.update(1)           -- 1
-
-      assert_equal(b.val, 2)
-      assert_not_nil(getmetatable(a))
-      assert_equal(mt, getmetatable(a))
+  describe(':update', function()
+    it('works recursively', function()
+      local subject = {1, a = {1, {2, 3}}}
+      local target =  {a = {4, {8, 12}}}
+      local t = tween.new(3, subject, target)
+      t:update(1)
+      assert.same(subject, {1, a = {2, {4, 6}}})
+      t:update(1)
+      assert.same(subject, {1, a = {3, {6, 9}}})
+      t:update(1)
+      assert.same(subject, {1, a = {4, {8, 12}}})
     end)
-    test('A completed tween should preserve metatables in the interpolated subtable', function()
+
+    it('makes subject == target when finished', function()
+      local a = {1}
+      local b = {x = 1, y = 1}
+      local c = {color = {0,0,0}}
+
+      local t1 = tween.new(1, a, {2}, 'linear')
+      local t2 = tween.new(3, b, {x = 2, y = 2}, 'linear')
+      local t3 = tween.new(5, c, {color = {255,30,50}})
+
+      t1:update(1)              -- 1
+      t2:update(1)
+      t3:update(1)
+      assert.equals(a[1], 2)
+
+      t1:update(1)              -- 2
+      t2:update(1)
+      t3:update(1)
+      assert.equals(a[1], 2)
+
+      t1:update(1)              -- 3
+      t2:update(1)
+      t3:update(1)
+      assert.same(b, {x=2, y=2})
+
+      t1:update(2)              -- 5
+      t2:update(2)
+      t3:update(2)
+      assert.same(b, {x=2, y=2})
+      assert.same(c, {color={255,30,50}})
+    end)
+
+    it('returns true when it expires', function()
+      local t1 = tween.new(3, {a=1}, {a=3})
+      assert.is_false(t1:update(1))
+      assert.is_false(t1:update(1))
+      assert.is_true(t1:update(1))
+    end)
+
+    it('preserves metatables in the interpolated table', function()
       local mt = {}
-      local a = { val = 1}
-      local b = { val = 2}
+      local a = {val = 1}
+      local b = {val = 2}
 
       setmetatable(a, mt)
       setmetatable(b, mt)
 
-      local c = { t = a }
+      local t = tween.new(1, a, b)
 
-      tween(1, c, { t = b })
-      
-      tween.update(1)           -- 1
+      t:update(1)
 
-      assert_equal(c.t.val, 2)
-      assert_not_nil(getmetatable(c.t))
-      assert_equal(mt, getmetatable(c.t))
+      assert.equals(b.val, 2)
+      assert.equals(mt, getmetatable(a))
+    end)
+
+    it('preserves metatables in the interpolated subtable', function()
+      local mt = {}
+      local a = {val = 1}
+      local b = {val = 2}
+
+      setmetatable(a, mt)
+      setmetatable(b, mt)
+
+      local c = {t = a}
+
+      local t = tween.new(1, c, {t = b})
+
+      t:update(1)
+
+      assert.equals(c.t.val, 2)
+      assert.equals(mt, getmetatable(c.t))
+    end)
+
+    it('takes into account changes in the target', function()
+      local a = {1}
+      local b = {3}
+
+      local t = tween.new(4, a, b)
+
+      t:update(1)           -- 1
+      assert.equals(a[1], 1.5)
+
+      b[1] = 10
+
+      t:update(1)           -- 2
+      assert.equals(a[1], 5.5)
+
+      t:update(2)           -- 2
+      assert.equals(a[1], 10)
+
     end)
   end)
 
-  describe('copy-target', function()
-    test('a changing target should not affect a tween in progress', function()
-      local a = {1}
-      local b = {3}
-
-      tween(2, a, b, 'linear', count)
-
-      b[1] = 10
-      tween.update(1)           -- 1
-      assert_equal(a[1], 2)
-
-      tween.update(1)           -- 2
-      assert_equal(a[1], 3)
-    end)
-    test('a changing target should not affect final values of a tween', function()
-      local a = {1}
-      local b = {3}
-
-      tween(2, a, b, 'linear', count)
-
-      tween.update(1)           -- 1
-
-      b[1] = 10
-      tween.update(1)           -- 2
-      assert_equal(a[1], 3)
+  describe(':reset', function()
+    it('it resets subject and running', function()
+      local subject = {1}
+      local t = tween.new(2, subject, {3})
+      t:update(1)
+      t:reset()
+      assert.equals(subject[1], 1)
+      assert.equals(t.running, 0)
     end)
   end)
 
