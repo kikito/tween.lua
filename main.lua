@@ -6,7 +6,7 @@ local balls_rows         = 20
 local balls_columns      = 20
 local balls_final_color  = {255,255,255}
 
-local duration = 10
+local duration = 2
 
 local screen_w,screen_h = love.graphics.getDimensions()
 
@@ -32,20 +32,24 @@ local function get_ball_target(column, row)
   return {x=x, y=y, radius = balls_final_radius}
 end
 
-local function create_ball(column, row)
+local function create_ball(column, row, i)
+
+  local dur = duration + i * 0.01
+  local angle = 2 * math.pi * balls_columns * balls_rows / i
+
   local ball = {
-    radius = math.random(balls_final_radius / 2, balls_final_radius * 2),
-    x = math.random(0, screen_w),
-    y = math.random(0, screen_h),
+    x = screen_w / 2 + (screen_w) * math.cos(angle),
+    y = screen_h / 2 + (screen_h) * math.sin(angle),
+    radius = math.random(balls_final_radius / 2, balls_final_radius * 4),
     r = math.random(0,255),
     g = math.random(0,255),
     b = math.random(0,255)
   }
 
-  local target      = get_ball_target(column, row)
-  local dur         = duration + duration * (1-math.random()) / 2
   local easing_key  = easing_keys[math.random(1, #easing_keys)]
   local easing      = tween.easing[easing_key]
+
+  local target = get_ball_target(column, row)
 
   ball.tweens = {
     tween.new(dur, ball, target, easing),
@@ -57,10 +61,10 @@ end
 
 function love.load()
   local len = 0
-  for column=1, balls_columns do
-    for row=1, balls_rows do
+  for row=1, balls_rows do
+    for column=1, balls_columns do
       len = len + 1
-      balls[len] = create_ball(column, row)
+      balls[len] = create_ball(column, row, len)
     end
   end
 end
@@ -84,6 +88,14 @@ function love.draw()
     love.graphics.setColor(0,0,0)
     love.graphics.circle('line', ball.x, ball.y, ball.radius)
   end
+
+  local msg = [[
+    tween.lua demo
+    press space to rewind
+  ]]
+
+  love.graphics.setColor(255,255,255)
+  love.graphics.print(msg, 10, 10)
 end
 
 function love.keypressed(k)
