@@ -61,8 +61,8 @@ local getGraphRect = function(index)
   local table_rows    = 3
   local table_columns = 4
 
-  local x_margin = 10
-  local y_margin = 35
+  local x_margin = screen_w / 100
+  local y_margin = screen_h / 20
 
   local table_w = screen_w - 2*x_margin
   local table_h = screen_h - 2*y_margin
