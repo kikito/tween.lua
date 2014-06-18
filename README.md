@@ -125,21 +125,21 @@ Each family (except `linear`) has 4 variants:
 * `inOut` starts and ends slow, but it's fast in the middle
 * `outIn` starts and ends fast, but it's slow in the middle
 
-| family | in    | out     | inOut    | outIn    |
-|--------|-------|---------|----------|----------|
-| [linear](https://github.com/kikito/tween.lua/raw/master/graphs/linear.png)   | linear   | linear     | linear      | linear      |
-| [quad](https://github.com/kikito/tween.lua/raw/master/graphs/quad.png)       | inQuad   | outQuad    | inOutQuad   | outInQuad   |
-| [cubic](https://github.com/kikito/tween.lua/raw/master/graphs/cubic.png)     | inCubic  | outCubic   | inOutCubic  | outInCubic  |
-| [quart](https://github.com/kikito/tween.lua/raw/master/graphs/quart.png)     | inQuart  | outQuart   | inOutQuart  | outInQuart  |
-| [quint](https://github.com/kikito/tween.lua/raw/master/graphs/quint.png)     | inQuint  | outQuint   | inOutQuint  | outInQuint  |
-| [expo](https://github.com/kikito/tween.lua/raw/master/graphs/expo.png)       | inExpo   | outExpo    | inOutExpo   | outInExpo   |
-| [sine](https://github.com/kikito/tween.lua/raw/master/graphs/sine.png)       | inSine   | outSine    | inOutSine   | outInSine   |
-| [circle](https://github.com/kikito/tween.lua/raw/master/graphs/circle.png)   | inCirc   | outCirc    | inOutCirc   | outInCirc   |
-| [back](https://github.com/kikito/tween.lua/raw/master/graphs/back.png)       | inBack   | outBack    | inOutBack   | outInBack   |
-| [bounce](https://github.com/kikito/tween.lua/raw/master/graphs/bounce.png)   | inBounce | outBounce  | inOutBounce | outInBounce |
-| [elastic](https://github.com/kikito/tween.lua/raw/master/graphs/elastic.png) | inElastic | outElastic |inOutElastic|outInElastic|
+| family  | in        | out        | inOut        | outIn        |
+|---------|-----------|------------|--------------|--------------|
+| linear  | linear    | linear     | linear       | linear       |
+| quad    | inQuad    | outQuad    | inOutQuad    | outInQuad    |
+| cubic   | inCubic   | outCubic   | inOutCubic   | outInCubic   |
+| quart   | inQuart   | outQuart   | inOutQuart   | outInQuart   |
+| quint   | inQuint   | outQuint   | inOutQuint   | outInQuint   |
+| expo    | inExpo    | outExpo    | inOutExpo    | outInExpo    |
+| sine    | inSine    | outSine    | inOutSine    | outInSine    |
+| circle  | inCirc    | outCirc    | inOutCirc    | outInCirc    |
+| back    | inBack    | outBack    | inOutBack    | outInBack    |
+| bounce  | inBounce  | outBounce  | inOutBounce  | outInBounce  |
+| elastic | inElastic | outElastic | inOutElastic | outInElastic |
 
-You may want to give a look to the graphs folder on this repository to get a better idea of what I'm talking about.
+![tween families](https://kikito.github.io/tween.lua/img/tween-families.png)
 
 When you specify an easing function, you can either give the function name as a string. The following two are equivalent:
 
