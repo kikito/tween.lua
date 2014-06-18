@@ -45,7 +45,7 @@ end
 
 
 local drawGraph = function(l,t,w,h, family)
-  if family == 'linear' then
+  if family == 'Linear' then
     drawEasing(l,t,w,h, easingValues.linear, variantColors.linear)
   else
     for _,v in ipairs(variants) do
@@ -130,11 +130,11 @@ function love.load()
   for _,easingName in ipairs(easingNames) do
     subject = {0}
     t       = tween.new(1, subject, {1}, easingName)
-    values  = {}
+    values  = {0}
 
     for i=1, steps do
       t:update(1/steps)
-      values[i] = subject[1]
+      values[i+1] = subject[1]
     end
 
     easingValues[easingName] = values
@@ -145,7 +145,7 @@ function love.draw()
   love.graphics.setFont(font)
   love.graphics.setColor(255,255,255)
   love.graphics.rectangle('fill', 0,0,screen_w, screen_h)
-  drawFamily(0, 'linear')
+  drawFamily(0, 'Linear')
   for i,f in ipairs(families) do
     drawFamily(i, f)
   end
