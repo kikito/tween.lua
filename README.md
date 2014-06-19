@@ -109,6 +109,8 @@ Easing functions are functions that express how slow/fast the interpolation happ
 
 `tween.lua` comes with 45 default easing functions already built-in (adapted from [Emmanuel Oga's easing library](https://github.com/EmmanuelOga/easing)).
 
+![tween families](https://kikito.github.io/tween.lua/img/tween-families.png)
+
 The easing functions can be found in the table `tween.easing`.
 
 They can be divided into several families:
@@ -125,21 +127,19 @@ Each family (except `linear`) has 4 variants:
 * `inOut` starts and ends slow, but it's fast in the middle
 * `outIn` starts and ends fast, but it's slow in the middle
 
-| family  | in        | out        | inOut        | outIn        |
-|---------|-----------|------------|--------------|--------------|
-| linear  | linear    | linear     | linear       | linear       |
-| quad    | inQuad    | outQuad    | inOutQuad    | outInQuad    |
-| cubic   | inCubic   | outCubic   | inOutCubic   | outInCubic   |
-| quart   | inQuart   | outQuart   | inOutQuart   | outInQuart   |
-| quint   | inQuint   | outQuint   | inOutQuint   | outInQuint   |
-| expo    | inExpo    | outExpo    | inOutExpo    | outInExpo    |
-| sine    | inSine    | outSine    | inOutSine    | outInSine    |
-| circle  | inCirc    | outCirc    | inOutCirc    | outInCirc    |
-| back    | inBack    | outBack    | inOutBack    | outInBack    |
-| bounce  | inBounce  | outBounce  | inOutBounce  | outInBounce  |
-| elastic | inElastic | outElastic | inOutElastic | outInElastic |
-
-![tween families](https://kikito.github.io/tween.lua/img/tween-families.png)
+| family      | in        | out        | inOut        | outIn        |
+|-------------|-----------|------------|--------------|--------------|
+| **Linear**  | linear    | linear     | linear       | linear       |
+| **Quad**    | inQuad    | outQuad    | inOutQuad    | outInQuad    |
+| **Cubic**   | inCubic   | outCubic   | inOutCubic   | outInCubic   |
+| **Quart**   | inQuart   | outQuart   | inOutQuart   | outInQuart   |
+| **Quint**   | inQuint   | outQuint   | inOutQuint   | outInQuint   |
+| **Expo**    | inExpo    | outExpo    | inOutExpo    | outInExpo    |
+| **Sine**    | inSine    | outSine    | inOutSine    | outInSine    |
+| **Circ**    | inCirc    | outCirc    | inOutCirc    | outInCirc    |
+| **Back**    | inBack    | outBack    | inOutBack    | outInBack    |
+| **Bounce**  | inBounce  | outBounce  | inOutBounce  | outInBounce  |
+| **Elastic** | inElastic | outElastic | inOutElastic | outInElastic |
 
 When you specify an easing function, you can either give the function name as a string. The following two are equivalent:
 
