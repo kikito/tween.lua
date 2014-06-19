@@ -107,7 +107,7 @@ This method is equivalent to `t:set(0)`.
 
 Easing functions are functions that express how slow/fast the interpolation happens in tween.
 
-`tween.lua` comes with 45 default easing functions already built-in (adapted from [Emmanuel Oga's easing library](https://github.com/EmmanuelOga/easing).
+`tween.lua` comes with 45 default easing functions already built-in (adapted from [Emmanuel Oga's easing library](https://github.com/EmmanuelOga/easing)).
 
 The easing functions can be found in the table `tween.easing`.
 
