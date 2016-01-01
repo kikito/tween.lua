@@ -154,6 +154,31 @@ But since `'linear'` is the default, you can also do this:
 local t3 = tween.new(10, subject, {x=10})
 ```
 
+## Custom easing functions
+
+You are not limited to tween's easing functions; if you pass a function parameter in the easing, it will be used.
+
+The passed function will need to take 4 parameters:
+
+* `t` (time): starts in 0 and usually moves towards duration
+* `b` (begin): initial value of the of the property being eased.
+* `c` (change): ending value of the property - starting value of the property
+* `d` (duration): total duration of the tween
+
+And must return the new value after the interpolation occurs.
+
+Here's an example using [LÖVE's Bezier Curve](https://love2d.org/wiki/BezierCurve) (you will need LÖVE for this example, but tween.lua does not need LÖVE in general).
+
+``` lua
+local cubicbezier = function (x1, y1, x2, y2)
+  local curve = love.math.newBezierCurve(0, 0, x1, y1, x2, y2, 1, 1)
+  return function (t, b, c, d) return c * curve:evaluate(t/d) + b end
+end
+
+local label = { x=200, y=0, text = "hello" }
+local labelTween = tween.new(4, label, {y=300}, cubicbezier(.35, .97, .58, .61))
+```
+
 # Gotchas / Warnings
 
 * `tween` does not have any defined time units (seconds, milliseconds, etc). You define the units it uses by passing it a `dt` on `tween.update`. If `dt` is in seconds, then `tween` will work in seconds. If `dt` is in milliseconds, then `tween` will work in milliseconds.
