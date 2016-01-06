@@ -213,10 +213,4 @@ See the LICENSE.txt file for details.
 
 # Changelog
 
-v2.0.0:
-
-* the library no longer has "an internal list of tweens". Instead, `tween.new` returns an individual tween, which
-  must be updated individually with `t:update(dt)`
-* tweens can go forwards and backwards (trying to set the internal clock to a negative number makes it zero)
-
-
+See CHANGELOG.md for a full list of changes.
