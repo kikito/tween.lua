@@ -281,6 +281,26 @@ describe('Tween', function()
       assert.equals(a[1], 10)
 
     end)
+
+    it('sets the initial value when called, not when the tween is created', function()
+      local steps = {}
+      local subject = { x = 0 }
+
+      local first  = tween.new(2, subject, {x = 200})
+      local second = tween.new(2, subject, {x = 400})
+      local complete = false
+
+      for i = 1, 4 do
+        if complete then
+          second:update(1)
+        else
+          complete = first:update(1)
+        end
+        steps[i] = subject.x
+      end
+
+      assert.same(steps, {100,200,300,400})
+    end)
   end)
 
   describe(':reset', function()
