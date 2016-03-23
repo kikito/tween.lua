@@ -1,19 +1,30 @@
-language: c
+language: python
+sudo: false
 
 env:
-  - LUA='Lua 5.1'
-  - LUA='Lua 5.2'
-  - LUA='Lua 5.3'
-  - LUA='LuaJIT 2.0'
+  - LUA="lua=5.1"
+  - LUA="lua=5.2"
+  - LUA="lua=5.3"
+  - LUA="luajit=2.0"
+  - LUA="luajit=2.1"
 
 before_install:
-  - bash .travis_setup.sh
+  - pip install hererocks
+  - hererocks lua_install -r^ --$LUA
+  - export PATH=$PATH:$PWD/lua_install/bin # Add directory with all installed binaries to PATH
 
 install:
-  - sudo apt-get update -qq
-  - sudo luarocks install busted
+  - luarocks install luacheck
+  - luarocks install busted
+  - luarocks install luacov
+  - luarocks install luacov-coveralls
 
-script: busted -v
+script:
+  - luacheck --std max+busted *.lua spec
+  - busted --verbose --coverage
+
+after_success:
+  - luacov-coveralls --exclude $TRAVIS_BUILD_DIR/lua_install
 
 branches:
   except:
