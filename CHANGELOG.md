@@ -1,3 +1,7 @@
+# v2.1.1
+
+* Fixes an error where you could not call `:set` inmediately after creating a tween, without calling `:update` first.
+
 # v2.1.0
 
 * The tweens now initialize the value of the subject on the first call to `:update` instead of when the tween is created.
