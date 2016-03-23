@@ -303,6 +303,15 @@ describe('Tween', function()
     end)
   end)
 
+  describe(':set', function()
+    it('does not throw an error when called before update', function()
+      local subject = {1}
+      local t = tween.new(2, subject, {4})
+      assert.not_error(function() t:set(1.5) end)
+      assert.equals(subject[1], 3.25)
+    end)
+  end)
+
   describe(':reset', function()
     it('it resets subject and running', function()
       local subject = {1}
