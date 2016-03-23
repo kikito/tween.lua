@@ -1,6 +1,7 @@
 # tween.lua
 
 [![Build Status](https://travis-ci.org/kikito/tween.lua.svg?branch=master)](https://travis-ci.org/kikito/tween.lua)
+[![Coverage Status](https://coveralls.io/repos/github/kikito/tween.lua/badge.svg?branch=master)](https://coveralls.io/github/kikito/tween.lua?branch=master)
 
 tween.lua is a small library to perform [tweening](http://en.wikipedia.org/wiki/Tweening) in Lua. It has a minimal
 interface, and it comes with several easing functions.
