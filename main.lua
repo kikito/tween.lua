@@ -4,7 +4,7 @@ local balls = {}
 local balls_final_radius = 8
 local balls_rows         = 20
 local balls_columns      = 20
-local balls_final_color  = {255,255,255}
+local balls_final_color  = {1,1,1}
 
 local duration = 2
 
@@ -41,9 +41,9 @@ local function create_ball(column, row, i)
     x = screen_w / 2 + (screen_w) * math.cos(angle),
     y = screen_h / 2 + (screen_h) * math.sin(angle),
     radius = math.random(balls_final_radius / 2, balls_final_radius * 4),
-    r = math.random(0,255),
-    g = math.random(0,255),
-    b = math.random(0,255)
+    r = math.random(),
+    g = math.random(),
+    b = math.random()
   }
 
   local easing_key  = easing_keys[math.random(1, #easing_keys)]
@@ -53,7 +53,7 @@ local function create_ball(column, row, i)
 
   ball.tweens = {
     tween.new(dur, ball, target, easing),
-    tween.new(dur, ball, {r=255,g=255,b=255}, 'inExpo')
+    tween.new(dur, ball, {r=1,g=1,b=1}, 'inExpo')
   }
 
   return ball
@@ -70,7 +70,7 @@ function love.load()
 end
 
 function love.update(dt)
-  if love.keyboard.isDown(' ') then dt = -dt end
+  if love.keyboard.isDown('space') then dt = -dt end
   for i=1, #balls do
     for j=1, #balls[i].tweens do
       balls[i].tweens[j]:update(dt)
@@ -82,7 +82,7 @@ function love.draw()
   local ball, r,g,b
   for i=1, #balls do
     ball = balls[i]
-    r,g,b = pad(ball.r, 0, 255), pad(ball.g, 0, 255), pad(ball.b, 0, 255)
+    r,g,b = pad(ball.r, 0, 1), pad(ball.g, 0, 1), pad(ball.b, 0, 1)
     love.graphics.setColor(r,g,b)
     love.graphics.circle('fill', ball.x, ball.y, ball.radius)
     love.graphics.setColor(0,0,0)
@@ -94,12 +94,10 @@ function love.draw()
     press space to rewind
   ]]
 
-  love.graphics.setColor(255,255,255)
+  love.graphics.setColor(1,1,1)
   love.graphics.print(msg, 10, 10)
 end
 
 function love.keypressed(k)
   if k == 'escape' then love.event.quit() end
 end
-
-
